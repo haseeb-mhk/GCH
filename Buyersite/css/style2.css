@@ -1,0 +1,105 @@
+/* styling of newarrival container  */
+
+.container-new-arrival {
+    display: flex;
+    width: 90%; /* Adjust this width as needed */
+    max-width: 95%; /* Set a max-width for larger screens */
+    background-color: #A7C7E7;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    border-radius: 8px;
+    margin: auto; /* Center the container */
+    padding: 20px; /* Add padding */
+}
+
+.newarival-img, .newarival-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.newarival-img img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.newarival-text {
+    text-align: center;
+}
+
+.newarival-text span pre {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 25px;
+    font-weight: bold;
+    margin: 0;
+    padding: 20px;
+    white-space: pre-wrap;
+    border-bottom: 2px solid black ;
+    /* line-height: 20px; */
+}
+
+/* Responsive styles */
+
+/* For large tablets and smaller desktops */
+@media (max-width: 1024px) {
+    .container-new-arrival {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .newarival-img, .newarival-text {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+    }
+
+    .newarival-img img {
+        max-width: 80%;
+    }
+
+    .newarival-text span pre {
+        font-size: 16px;
+    }
+
+    .view-more-button {
+        font-size: 14px;
+    }
+}
+
+/* For small tablets and large phones */
+@media (max-width: 768px) {
+    .newarival-text span pre {
+        font-size: 14px;
+    }
+
+    .view-more-button {
+        font-size: 12px;
+    }
+}
+
+/* For phones */
+@media (max-width: 480px) {
+    .container-new-arrival {
+        padding: 10px;
+    }
+
+    .newarival-img img {
+        max-width: 100%;
+    }
+
+    .newarival-text span pre {
+        font-size: 12px;
+    }
+
+    .view-more-button {
+        font-size: 10px;
+    }
+}
+
+
+
+
