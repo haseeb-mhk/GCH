@@ -1,3 +1,137 @@
+<?php
+include("includes/Session.php");
+include("../includes/Connection.php");
+$display_s = "block";
+$display_u = "none";
+
+$pname  = "";
+$cat_id = "";
+$sub_cat_id = "";
+$Cat_name  = "Select";
+$sub_cat_name  = "Select";
+$p_desc  = "";
+$p_price  = "";
+$p_quantity  = "";
+$p_img1  = "";
+$p_img2  = "";
+$p_img3  = "";
+
+
+// Getting the seller id 
+
+$user_id  = $_SESSION['user_id'];
+
+$fetch_seller_id_query = "SELECT * FROM sellers WHERE user_id = '$user_id'";
+$result = mysqli_query($con, $fetch_seller_id_query);
+if ($result && mysqli_num_rows($result) > 0) {
+    $row = mysqli_fetch_assoc($result);
+    $seller_id = $row['id'];
+}
+
+if (isset($_POST['btnSubmit'])) {
+
+    // Extract data from the form
+    $productName = $_POST['product_name'];
+    $productQuantity =  $_POST['product_quantity'];
+    $productCategory =  $_POST['product_category'];
+    $productSubCategory = $_POST['product_sub_category'];
+    $productPrice =  $_POST['product_price'];
+    $productDescription =  $_POST['product_description'];
+    // Handling file uploads
+    $image1 = $_FILES['product_image1']['name'];
+    $image2 = $_FILES['product_image2']['name'];
+    $image3 = $_FILES['product_image3']['name'];
+
+    // // Move uploaded files to a designated directory
+    move_uploaded_file($_FILES['product_image1']['tmp_name'], "img/productimages/" . $image1);
+    move_uploaded_file($_FILES['product_image2']['tmp_name'], "img/productimages/" . $image2);
+    move_uploaded_file($_FILES['product_image3']['tmp_name'], "img/productimages/" . $image3);
+    $insertProductQuery = "INSERT INTO products (name,seller_id, category_id, sub_category_id, price, quantity, description, image1, image2, image3) 
+    VALUES ('$productName', '$seller_id', '$productCategory', '$productSubCategory', '$productPrice', '$productQuantity','$productDescription', '$image1', '$image2', '$image3')";
+
+    if (mysqli_query($con, $insertProductQuery)) {
+        echo "Product inserted successfully.";
+    } else {
+        echo "Error: " . mysqli_error($con);
+    }
+}
+
+
+
+// code for getting the data through id 
+
+if (isset($_GET['PID'])) {
+    $p_id = $_GET['PID'];
+    $select_product = mysqli_query($con, "Select * from products where id = '$p_id'");
+    $row_p = mysqli_fetch_row($select_product);
+    $pname  = $row_p[1];
+    $cat_id  = $row_p[3];
+    // query for getting category name 
+
+    $query_cat = mysqli_query($con, "select * from categories where id  = '$cat_id' ");
+    if($query_cat){
+    $row_cat = mysqli_fetch_row($query_cat);
+                $Cat_name = $row_cat[1];
+}
+
+    // getting sub category name 
+
+    $sub_cat_id  = $row_p[4];
+
+    $query_sub_Cat = mysqli_query($con, "Select * from sub_categories where id  = '$sub_cat_id' ");
+    if($query_sub_Cat){
+        $row_query_sub_Cat = mysqli_fetch_row($query_sub_Cat);
+        $sub_cat_name = $row_query_sub_Cat[1];
+    }
+
+
+    $p_desc  = $row_p[5];
+    $p_price  = $row_p[6];
+    $p_quantity  = $row_p[7];
+    $p_img1  = $row_p[8];
+    $p_img2  = $row_p[9];
+    $p_img3  = $row_p[10];
+    $display_s = "none";
+    $display_u = "block";
+}
+
+// code for updating the data 
+
+if (isset($_POST['btnUpd'])){
+
+     // Extract data from the form
+     $productName = $_POST['product_name'];
+     $productQuantity =  $_POST['product_quantity'];
+     $productCategory =  $_POST['product_category'];
+     $productSubCategory = $_POST['product_sub_category'];
+     $productPrice =  $_POST['product_price'];
+     $productDescription =  $_POST['product_description'];
+     // Handling file uploads
+     $image1 = $_FILES['product_image1']['name'];
+     $image2 = $_FILES['product_image2']['name'];
+     $image3 = $_FILES['product_image3']['name'];
+ 
+     // // Move uploaded files to a designated directory
+     move_uploaded_file($_FILES['product_image1']['tmp_name'], "img/productimages/" . $image1);
+     move_uploaded_file($_FILES['product_image2']['tmp_name'], "img/productimages/" . $image2);
+     move_uploaded_file($_FILES['product_image3']['tmp_name'], "img/productimages/" . $image3);
+
+
+    $query_update_product = mysqli_query($con,"UPDATE products SET name='$productName',category_id='$productCategory',sub_category_id='$productSubCategory',description='$productDescription',price='$productPrice',quantity='$productQuantity',image1='$image1',image2='$image2',image3='$image3' WHERE id = '$p_id'");
+    if($query_update_product){
+                // echo "Product Updated Successfully";
+                header('location:product_list.php');
+
+    }
+    else{
+        echo (mysqli_errno($con));
+    }
+}
+
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -40,7 +174,7 @@
                     <!-- Begin Page Content -->
                     <div class="container-fluid">
 
-                      
+
 
                     </div>
 
@@ -54,20 +188,20 @@
                                     Add product Details
                                 </div>
                                 <div class="card-body">
-                                    <form>
+                                    <form method="post" enctype="multipart/form-data">
                                         <div class="row">
 
                                             <div class="col-6">
                                                 <div class="form-group">
                                                     <label for="ProductName">Name</label>
-                                                    <input type="text" class="form-control" id="productname" name="product_name" placeholder="Enter Product name">
+                                                    <input type="text" class="form-control" id="productname" name="product_name" placeholder="Enter Product name" required value="<?php echo $pname ?>">
                                                 </div>
 
                                             </div>
                                             <div class="col-6">
                                                 <div class="form-group">
                                                     <label for="quantity">Quantity</label>
-                                                    <input type="number" class="form-control" id="productquantity" name="product_quantity" placeholder="Enter Product quantity">
+                                                    <input type="number" class="form-control" id="productquantity" name="product_quantity" placeholder="Enter Product quantity" required value="<?php echo $p_quantity ?>">
                                                 </div>
                                             </div>
 
@@ -78,11 +212,15 @@
                                             <div class="col-6">
                                                 <div class="form-group">
                                                     <label for="category">Category</label>
-                                                    <select class="form-control">
-                                                        <option selected>select</option>
-                                                        <option >Fashion & Apparel</option>
-                                                        <option >Baby and Kids</option>
-                                                        <option >Furnitures</option>
+                                                    <select class="form-control" name="product_category" required id="product_category">
+                                                        <option selected value="<?php echo ($cat_id); ?>" ><?php echo $Cat_name ?></option>
+                                                        <?php
+                                                        $select_categories = mysqli_query($con, "Select * from categories");
+
+                                                        while ($row_categories = mysqli_fetch_array($select_categories)) {
+                                                        ?>
+                                                            <option value="<?php echo ($row_categories['id']); ?>"><?php echo ($row_categories['name']) ?></option>
+                                                        <?php }   ?>
                                                     </select>
                                                 </div>
 
@@ -90,11 +228,15 @@
                                             <div class="col-6">
                                                 <div class="form-group">
                                                     <label for="subcategory">Sub Category</label>
-                                                    <select class="form-control">
-                                                        <option selected>select</option>
-                                                        <option >Fashion & Apparel</option>
-                                                        <option>Baby and Kids</option>
-                                                        <option >Furnitures</option>
+                                                    <select class="form-control" name="product_sub_category" required id="product_sub_category">
+                                                        <option selected value="<?php echo($sub_cat_id) ?>"><?php echo $sub_cat_name ?></option>
+                                                        <?php
+                                                        $select_sub_categories = mysqli_query($con, "Select * from sub_categories");
+
+                                                        while ($row_sub_categories = mysqli_fetch_array($select_sub_categories)) {
+                                                        ?>
+                                                            <option value="<?php echo ($row_sub_categories['id']) ?>"><?php echo ($row_sub_categories['name']) ?></option>
+                                                        <?php }   ?>
                                                     </select>
                                                 </div>
                                             </div>
@@ -102,47 +244,50 @@
                                         </div>
                                         <div class="row">
 
-<div class="col-6">
-    <div class="form-group">
-        <label for="Productprice">Price</label>
-        <input type="number" class="form-control" id="productprice" name="product_price" placeholder="Enter Product price">
-    </div>
+                                            <div class="col-6">
+                                                <div class="form-group">
+                                                    <label for="Productprice">Price</label>
+                                                    <input type="number" class="form-control" id="productprice" name="product_price" placeholder="Enter Product price" required value="<?php echo $p_price ?>">
+                                                </div>
 
-</div>
+                                            </div>
 
-</div>
+                                        </div>
 
-<div class="row">
+                                        <div class="row">
 
-<div class="col-4">
-    <div class="form-group">
-    <label for="product_image"> Image 1</label>
-    <input type="file" class="form-control-file" id="productimage1" name="product_image1">
-     </div>
+                                            <div class="col-4">
+                                                <div class="form-group">
+                                                    <label for="product_image"> Image 1</label>
+                                                    <input type="file" class="form-control-file" id="productimage1" name="product_image1" required value="<?php echo $p_img1 ?>">
+                                                </div>
 
-</div><div class="col-4">
-    <div class="form-group">
-    <label for="product_image">Image 2</label>
-    <input type="file" class="form-control-file" id="productimage1" name="product_image2">
-     </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="form-group">
+                                                    <label for="product_image">Image 2</label>
+                                                    <input type="file" class="form-control-file" id="productimage1" name="product_image2" value="<?php echo $p_img2 ?>">
+                                                </div>
 
-</div><div class="col-4">
-    <div class="form-group">
-    <label for="product_image"> Image 3</label>
-    <input type="file" class="form-control-file" id="productimage1" name="product_image3">
-     </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="form-group">
+                                                    <label for="product_image"> Image 3</label>
+                                                    <input type="file" class="form-control-file" id="productimage1" name="product_image3" value="<?php echo $p_img3 ?>" >
+                                                </div>
 
-</div>
+                                            </div>
 
 
-</div>
-<div class="form-group">
-    <label for="exampleFormControlTextarea1">description</label>
-    <textarea class="form-control" id="product_description" rows="3" name="product_description"></textarea>
-  </div>
-                                <a href="#" class="btn btn-primary">Submit</a>
-                                <a href="#" class="btn btn-success">Update</a>
-                                        
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleFormControlTextarea1">description</label>
+                                            <textarea class="form-control" id="product_description" rows="3" name="product_description" ><?php echo $p_desc ?></textarea>
+                                        </div>
+                                        <input type="submit" class="btn btn-primary" value="Submit" name="btnSubmit" style="display: <?php echo $display_s ?>;">
+                                        <input type="submit" class="btn btn-success" value="Update" name="btnUpd" style="display: <?php echo $display_u ?>;">
+
+
                                     </form>
 
 
@@ -200,6 +345,11 @@
         </div>
     </div>
     <?php include("includes/jslinks.php")  ?>
+
+
+
+
+
 </body>
 
 </html>

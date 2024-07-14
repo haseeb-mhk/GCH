@@ -1,3 +1,20 @@
+<?php
+session_start();
+include("../includes/Connection.php");
+if (!isset($_SESSION["role"]) || $_SESSION["role"] != "buyer") {
+  header("location:Login.php");
+  exit();
+}
+
+$user_id = $_SESSION['user_id'];
+$query_for_name = mysqli_query($con,"select * from buyers where user_id = '$user_id'");
+$result = mysqli_fetch_assoc($query_for_name);
+$name = $result['full_name'];
+
+?>
+
+
+
 <header class="header_area">
     <div class="main_menu">
       <nav class="navbar navbar-expand-lg navbar-light">
@@ -31,7 +48,8 @@
               <li class="nav-item">  
               <a href="#"><i class="ti-heart"></i></a></li>
               <li class="nav-item"><a href="Cart.php"><i class="ti-shopping-cart"></i><span class="nav-shop__circle"></span></a> </li>
-              <li class="nav-item"><a class="button button-header" href="Registration.php">Register</a></li>
+              <li class="nav-item"><a href="profile.php" title="Profile"><i class="ti-user"></i><span class="nav-shop__circle">&#9;&#9;&#9;<?php echo($name);?></span></a> </li>
+              
             </ul>
           </div>
         </div>

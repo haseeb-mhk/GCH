@@ -1,3 +1,9 @@
+<?php
+include("includes/Session.php");
+include("../includes/Connection.php");
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 

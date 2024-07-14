@@ -1,3 +1,82 @@
+<?php
+session_start();
+
+include('includes/Connection.php');
+$top_message = "";
+$authentication_msg = "";
+if (isset($_GET['redirect']) && $_GET['redirect'] == 'Registration') {
+	$top_message = "Your Account was Registered Successfully...!";
+} else {
+	$top_message = "Login to your Account";
+}
+
+
+
+if (isset($_POST['btnLogin'])) {
+	$username = $_POST['username'];
+	$password = $_POST['password'];
+
+
+	$username = mysqli_real_escape_string($con, $username);
+	$password = mysqli_real_escape_string($con, $password);
+
+
+	$query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
+	$result = mysqli_query($con, $query);
+
+	if (mysqli_num_rows($result) > 0) {
+		$user = mysqli_fetch_assoc($result);
+
+
+		$_SESSION['user_id'] = $user['id'];
+		$_SESSION['username'] = $user['username'];
+		$_SESSION['role'] = $user['role'];
+
+		$user_id = $user['id'];
+		$role = $user['role'];
+
+		if ($role == 'buyer') {
+			$status_query = "SELECT account_status FROM buyers WHERE user_id = '$user_id'";
+		} elseif ($role == 'seller') {
+			$status_query = "SELECT account_status FROM sellers WHERE user_id = '$user_id'";
+		} elseif ($role == 'admin') {
+			$status_query = "SELECT account_status FROM admins WHERE user_id = '$user_id'";
+		}
+
+		$status_result = mysqli_query($con, $status_query);
+
+		if (mysqli_num_rows($status_result) > 0) {
+			$status_row = mysqli_fetch_assoc($status_result);
+			$account_status = $status_row['account_status'];
+
+			if ($account_status == 'active') {
+
+				if ($role == 'buyer') {
+					// echo("Welcome to our site");
+					header('Location:Buyersite/index.php');
+				} elseif ($role == 'seller') {
+					// echo("Welcome to Seller Dashboard");
+					header('Location: sellersite/index.php');
+				} elseif ($role == 'admin') {
+					// echo("Welcome to admin panel");
+					header('Location: Admin/index.php');
+				}
+				exit();
+			} else {
+				$authentication_msg = "Your account is not active. Please contact support.";
+			}
+		} else {
+			$authentication_msg = "Account status not found.";
+		}
+	} else {
+		$authentication_msg = "Invalid username or password.";
+	}
+}
+?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,11 +85,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>GCH | Home</title>
-  
-  <?php 
-  include ("includes/Links.php")
-   ?>
+  <link rel="stylesheet" href="Buyersite/vendors/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="Buyersite/vendors/fontawesome/css/all.min.css">
+	<link rel="stylesheet" href="Buyersite/vendors/themify-icons/themify-icons.css">
+	<link rel="stylesheet" href="Buyersite/vendors/linericon/style.css">
+  <link rel="stylesheet" href="Buyersite/vendors/owl-carousel/owl.theme.default.min.css">
+  <link rel="stylesheet" href="Buyersite/vendors/owl-carousel/owl.carousel.min.css">
+  <link rel="stylesheet" href="Buyersite/vendors/nice-select/nice-select.css">
+  <link rel="stylesheet" href="Buyersite/vendors/nouislider/nouislider.min.css">
 
+  <link rel="stylesheet" href="Buyersite/css/style.css">
+  <link rel="stylesheet" href="Buyersite/css/style2.css">
+  <?php 
+//   include ("Buyersite/includes/Links.php")
+   ?>
+  <style>
+    /* CSS for the popup */
+
+    #loginModal .modal-dialog {
+      max-width: 70%;
+      z-index: 10000000;
+    }
+  </style>
 
 
 </head>
@@ -18,16 +114,11 @@
 <body>
   <!--================ Start Header Menu Area =================-->
 
-<?php   
-include("includes/header.php");
-
-?>
-
-  <!-- <header class="header_area">
+  <header class="header_area">
     <div class="main_menu">
       <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-          <a class="navbar-brand logo_h" href="index.php"><img src="img/GCH_logo_2.jpg" alt=""></a>
+          <a class="navbar-brand logo_h" href="index.php"><img src="Buyersite/img/GCH_logo_2.jpg" alt=""></a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="icon-bar"></span>
@@ -38,18 +129,18 @@ include("includes/header.php");
             <ul class="nav navbar-nav menu_nav ml-auto mr-auto">
               <li class="nav-item active"><a class="nav-link" href="index.php">Home</a></li>
               <li class="nav-item">
-                <a href="shop.php" class="nav-link" >Shop</a>
+                <a href="Buyersite/shop.php" class="nav-link" >Shop</a>
                 
 							</li>
               <li class="nav-item ">
-                <a href="Blogs.php" class="nav-link">Blog</a>
+                <a href="Buyersite/Blogs.php" class="nav-link">Blog</a>
                
 							</li>
 							<li class="nav-item ">
-                <a href="About.php" class="nav-link " >About Us</a>
+                <a href="Buyersite/About.php" class="nav-link " >About Us</a>
                 
               </li>
-              <li class="nav-item"><a class="nav-link" href="Contact.php">Contact Us</a></li>
+              <li class="nav-item"><a class="nav-link" href="Buyersite/Contact.php">Contact Us</a></li>
             </ul>
 
             <ul class="nav-shop">
@@ -62,7 +153,7 @@ include("includes/header.php");
         </div>
       </nav>
     </div>
-  </header> -->
+  </header>
 
 
   <!--================ End Header Menu Area =================-->
@@ -359,6 +450,61 @@ include("includes/header.php");
     <hr>
 
 
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="false">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+       	<!--================Login Box Area =================-->
+		<section class="login_box_area section-margin">
+			<div class="container">
+				<div class="row">
+
+					<div class="col-12">
+
+						<h2 align="center"><?php echo ($top_message);  ?></h2>
+
+					</div>
+
+				</div>
+
+				<hr>
+
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="login_box_img">
+							<div class="hover">
+								<h4>New to our website?</h4>
+								<p>There are advances being made in science and technology everyday, and a good example of this is the</p>
+								<a class="button button-account" href="Registration.php">Create an Account</a>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-6">
+						<div class="login_form_inner">
+							<h3>Log in to enter</h3>
+              <span style="color: red;"><?php echo($authentication_msg) ?></span>
+							<form class="row login_form" method="post" id="contactForm">
+								<div class="col-md-12 form-group">
+									<input type="text" class="form-control" id="username" name="username" placeholder="Username" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Username'">
+								</div>
+								<div class="col-md-12 form-group">
+									<input type="password" class="form-control" id="password" name="password" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+								</div>
+								<div class="col-md-12 form-group">
+									
+								</div>
+								<div class="col-md-12 form-group">
+									<button type="submit" value="submit" class="button button-login w-100" name="btnLogin">Log In</button>
+									<a href="#">Forgot Password?</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!--================End Login Box Area =================-->
+
+
         </div>
       </div>
     </div>
@@ -368,16 +514,38 @@ include("includes/header.php");
 
 
   <!--================ Start footer Area  =================-->
-  <?php include("includes/footer.php") 
+  <?php include("Buyersite/includes/footer.php") 
    ?>
   <!--================ End footer Area  =================-->
 
 
 
   <?php
-   include("includes/jslinks.php")  
+//    include("Buyersite/includes/jslinks.php")  
   ?>
+  
+<script src="Buyersite/vendors/jquery/jquery-3.2.1.min.js"></script>
+  <script src="Buyersite/vendors/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="Buyersite/vendors/skrollr.min.js"></script>
+  <script src="Buyersite/vendors/owl-carousel/owl.carousel.min.js"></script>
+  <script src="Buyersite/vendors/nice-select/jquery.nice-select.min.js"></script>
+  <script src="Buyersite/vendors/jquery.ajaxchimp.min.js"></script>
+  <script src="Buyersite/vendors/nouislider/nouislider.min.js"></script>
+  <script src="Buyersite/vendors/mail-script.js"></script>
+  <script src="Buyersite/js/main.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Show the modal after a delay (e.g., 10 seconds)
+      setTimeout(function() {
+        $('#loginModal').modal('show');
+      }, 10000); // 10000 milliseconds = 10 seconds
 
+      // Optional: Close modal logic
+      $('#loginModal .close').on('click', function() {
+        $('#loginModal').modal('hide');
+      });
+    });
+  </script>
 </body>
 
 </html>

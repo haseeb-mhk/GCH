@@ -1,3 +1,22 @@
+
+<?php
+session_start();
+include("../includes/Connection.php");
+//  if (!isset($_SESSION["role"]) || $_SESSION["role"] != "admin")
+if (!isset($_SESSION["role"]) ) {
+  header("location:../Buyersite/Login.php");
+  exit();
+}
+if(isset($_POST["btnlogOut"])){
+
+    session_destroy();
+    header("location:../Buyersite/Login.php");
+    
+}
+
+?>
+
+
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
@@ -94,9 +113,12 @@
         </div>
       </li>
       <li class="nav-item">
-        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
-          <i class="fas fa-th-large"></i>
-        </a>
+        <form action="" method="post">
+        <button class="nav-link btn btn-block btn-outline-danger btn-sm"  name="btnlogOut">
+          <i class="fas fa-sign-out-alt"></i>
+          Logout
+        </button>
+        </form>
       </li>
     </ul>
   </nav>

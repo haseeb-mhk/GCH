@@ -1,3 +1,24 @@
+<?php
+include("includes/Session.php");
+include("../includes/Connection.php");
+// Getting the seller id 
+
+$user_id  = $_SESSION['user_id'];
+
+$fetch_seller_id_query = "SELECT * FROM sellers WHERE user_id = '$user_id'";
+$result = mysqli_query($con, $fetch_seller_id_query);
+if ($result && mysqli_num_rows($result) > 0) {
+    $row = mysqli_fetch_assoc($result);
+    $seller_id = $row['id'];
+    
+}
+
+$select_products = mysqli_query($con,"SELECT p.*, c.name AS category_name, sc.name AS sub_category_name 
+          FROM products p 
+          JOIN categories c ON p.category_id = c.id 
+          JOIN sub_categories sc ON p.sub_category_id = sc.id where seller_id =  '$seller_id'");
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -56,21 +77,47 @@
                                                 <th>Sub-Cat</th>
                                                 <th>Price</th>
                                                 <th>Status</th>
+                                                <th>Uploaded at</th>
                                                 
                                             </tr>
                                         </thead>
 
                                         <tbody>
+                                            <?php    
+                                            while($row= mysqli_fetch_array($select_products)){
+                                            ?>
                                             <tr>
-                                                <td>Donna Snider</td>
-                                                <td>Customer Support</td>
-                                                <td>New York</td>
-                                                <td>27</td>
-                                                <td>2011/01/25</td>
-                                                <td>2011/01/25</td>
-                                                <td>2011/01/25</td>
+                                                <td><?php
+                                                $imagename  = $row['image1'];
+                                                $folder = "img/productimages/";
+                                                $completepath = $folder.$imagename; ?>
+                                            <img src="<?php echo $completepath ?>" width="50px" height="50px">    
+                                            </td>
+                                                <td><?php  echo $row['name'] ?></td>
+                                                <td><?php  echo $row['quantity'] ?></td>
+                                                <td>   <?php echo $row['category_name']?> </td>
+                                                <td><?php  echo $row['sub_category_name'] ?></td>
+                                                <td><?php  echo $row['price'] ?></td>
+                                                <td><?php 
+                                                if($row['product_status'] == "inactive"){
+                                                    ?>
+                                                    <button class="btn btn-warning">Pending</button>
+                                                    
+                                                    <?php
+                                                }else{
+                                                        ?>
+                                                        
+                                                        <button class="btn btn-success">Approved</button>
+                                                    
+                                                        
+                                                        <?php
+                                                }
+                                               
+                                                ?></td>
+                                                <td><?php  echo $row['created_at'] ?></td>
                                             
                                             </tr>
+                                            <?php } ?>
                                         </tbody>
                                         <tfoot>
                                             <tr>
@@ -81,6 +128,7 @@
                                                 <th>Sub-Cat</th>
                                                 <th>Price</th>
                                                 <th>Status</th>
+                                                <th>uploaded at</th>
                                                
                                             </tr>
                                         </tfoot>
