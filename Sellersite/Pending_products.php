@@ -16,7 +16,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 $select_products = mysqli_query($con,"SELECT p.*, c.name AS category_name, sc.name AS sub_category_name 
           FROM products p 
           JOIN categories c ON p.category_id = c.id 
-          JOIN sub_categories sc ON p.sub_category_id = sc.id where seller_id =  '$seller_id' and product_status = 'active' ");
+          JOIN sub_categories sc ON p.sub_category_id = sc.id where seller_id =  '$seller_id' and product_status = 'inactive'");
 ?>
 
 <!DOCTYPE html>
@@ -63,7 +63,7 @@ $select_products = mysqli_query($con,"SELECT p.*, c.name AS category_name, sc.na
 
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Products Approval Status</h6>
+                                <h6 class="m-0 font-weight-bold text-primary">Pending Products </h6>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">

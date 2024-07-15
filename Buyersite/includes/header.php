@@ -1,7 +1,8 @@
 <?php
 session_start();
 include("../includes/Connection.php");
-if (!isset($_SESSION["role"]) || $_SESSION["role"] != "buyer") {
+// if (!isset($_SESSION["role"]) || $_SESSION["role"] != "buyer")
+if (!isset($_SESSION["role"]) ){
   header("location:Login.php");
   exit();
 }

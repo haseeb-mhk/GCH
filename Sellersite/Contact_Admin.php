@@ -1,3 +1,26 @@
+<?php
+include("includes/Session.php");
+include("../includes/Connection.php");
+
+
+if (isset($_POST['btnSend'])) {
+    $email = $_POST['email'];
+    $query = $_POST['query'];
+    $user_id  = $_SESSION['user_id'];
+    $query_for_username = mysqli_query($con, "SELECT * FROM users WHERE id = '$user_id'");
+    $row_query_for_username = mysqli_fetch_row($query_for_username);
+    if ($row_query_for_username) {
+        $username = $row_query_for_username[1];
+        $insert_query = mysqli_query($con, "INSERT INTO `contact`( `user_id`, `name`, `email`, `message`) VALUES ('$user_id','$username','$email','$query')");
+        if($insert_query){
+            echo "your message has been send ";
+        }
+    }
+}
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -41,8 +64,43 @@
                     <div class="container-fluid">
 
                         <!-- Page Heading -->
-                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                            <h1 class="h3 mb-0 text-gray-800"> Contact To admin for any Query</h1>
+                        <div class="row">
+                            <div class="col-2"></div>
+                            <div class="col-8">
+
+                                <div class="card mb-4">
+                                    <div class="card-header" align="center" style="background-color: blue;color: white;">
+                                        Contact Form
+                                    </div>
+                                    <div class="card-body">
+                                        <form method="post">
+
+                                            <div class="form-group">
+                                                <label for="ProductName">Email</label>
+                                                <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email through which you will get response" required>
+                                            </div>
+
+
+
+                                            <div class="form-group">
+                                                <label for="exampleFormControlTextarea1">Message</label>
+                                                <textarea class="form-control" id="query" rows="3" name="query" placeholder="Enter your query"></textarea>
+                                            </div>
+                                            <input type="submit" class="btn btn-primary" value="Send" name="btnSend" width="500px">
+
+
+                                        </form>
+
+
+
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-2"></div>
+
+
                         </div>
 
                     </div>

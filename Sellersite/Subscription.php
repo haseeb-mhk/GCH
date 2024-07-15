@@ -1,3 +1,49 @@
+<?php
+include("includes/Session.php");
+include("../includes/Connection.php");
+$display1 = "none";
+$display2 = "none";
+$display3 = "none";
+
+$user_id  = $_SESSION['user_id'];
+$fetch_seller_id_query = "SELECT * FROM sellers WHERE user_id = '$user_id'";
+$result = mysqli_query($con, $fetch_seller_id_query);
+if ($result && mysqli_num_rows($result) > 0) {
+    $row = mysqli_fetch_assoc($result);
+    $seller_id = $row['id'];
+}
+
+$check_subscription_query = mysqli_query($con, "select * from subscriptions where seller_id = '$seller_id'");
+$check_subscription_row  = mysqli_num_rows($check_subscription_query);
+if ($check_subscription_row > 0) {
+    $check_status = mysqli_fetch_row($check_subscription_query);
+    if ($check_status[4] == "inactive") {
+        $display3 = "block";
+    } else {
+        $display1 = "none";
+        $display3 = "none";
+        $display2 = "block";
+    }
+} else {
+    $display1 = "block";
+    $display2 = "none";
+    $display3 = "none";
+
+}
+
+if (isset($_POST['btnsubscribe'])) {
+
+
+    $query_subscription = mysqli_query($con, "insert into subscriptions (seller_id)  values('$seller_id')");
+    if ($query_subscription) {
+        header("location:subscription.php");
+    }
+}
+
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -41,37 +87,90 @@
                     <div class="container-fluid">
 
                         <!-- Page Heading -->
-                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                            <h1 class="h3 mb-0 text-gray-800">Subscriptions Details</h1>
-                        </div>
 
-                        <div class="col-xl-12 col-md-12 mb-12">
-                            <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="col-xl-12 col-md-12 mb-12" style="display: <?php echo $display1 ?>;">
+                            <div class="card border-left-danger shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
-                                    <div class="container ">
-        <h2 class="mb-4">Your Subscriptions</h2>
-        <div class="row">
-            <!-- Example Card, should be dynamically generated with server-side data -->
-            <div class="col-md-4 mb-4">
-            
-                        <h5 class="card-title">Subscription ID: 1</h5>
-                        <p class="card-text"><strong>Seller ID:</strong> 123</p>
-                        <p class="card-text"><strong>Start Date:</strong> 2024-01-01</p>
-                        <p class="card-text"><strong>Expirey Date:</strong> 2024-12-31</p>
-                        <p class="card-text"><strong>Status:</strong> Active</p>
-                        <button class="btn btn-primary" onclick="renewSubscription(1)">Renew</button>
-                  
-            </div>
-            <!-- Additional cards would go here -->
-        </div>
-    </div>
+                                        <div class="container ">
+                                            <h2 class="mb-4">Warning : No Subscription</h2>
+                                            <div class="row">
+                                                <!-- Example Card, should be dynamically generated with server-side data -->
+                                                <div class="col-md-12 mb-12">
+
+                                                    <h5 class="card-title">You can't <strong> Add products </strong> until you subscribe </h5>
+                                                    <form method="post">
+                                                        <button type="submit" class="btn btn-success" name="btnsubscribe">Subscribe Now </button>
+                                                    </form>
+                                                </div>
+                                                <!-- Additional cards would go here -->
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    
 
+
+                        <div class="col-xl-12 col-md-12 mb-12" style="display: <?php echo $display2 ?>;">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="container ">
+                                            <h2 class="mb-4">Your Subscriptions</h2>
+                                            <div class="row">
+                                                <!-- Example Card, should be dynamically generated with server-side data -->
+                                                <div class="col-md-4 mb-4">
+
+                                                    <h5 class="card-title">Subscription ID: 1</h5>
+                                                    <p class="card-text"><strong>Seller ID:</strong> 123</p>
+                                                    <p class="card-text"><strong>Start Date:</strong> 2024-01-01</p>
+                                                    <p class="card-text"><strong>Expirey Date:</strong> 2024-12-31</p>
+                                                    <p class="card-text"><strong>Status:</strong> Active</p>
+                                                    <button class="btn btn-primary" onclick="renewSubscription(1)">Renew</button>
+
+                                                </div>
+                                                <!-- Additional cards would go here -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-12 col-md-12 mb-12" style="display: <?php echo $display3 ?>;">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="container ">
+                                            <h2 class="mb-4">Thanks for your Subscription ....!</h2>
+                                            <div class="row">
+                                                <!-- Example Card, should be dynamically generated with server-side data -->
+                                                <div class="col-md-12 mb-12">
+
+                                                    <h5 class="card-title">
+                                                        <ul>
+                                                            <li> Your request have been send to Admin...</li>
+                                                            <li> you will be notified when your account has been activated<br>
+                                                            </li>
+                                                            <li> <strong>Your can't Add product until activation</strong>
+                                                            </li>
+
+
+
+                                                        </ul>
+                                                    </h5>
+                                                    <form method="post">
+                                                        <a href="index.php" class="btn btn-success" name="btnsubscribe">Goto Dashboard </a>
+                                                    </form>
+                                                </div>
+                                                <!-- Additional cards would go here -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                     </div>
                     <!-- /.container-fluid -->

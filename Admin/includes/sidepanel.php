@@ -25,7 +25,7 @@
                with font-awesome or any other icon font library -->
                <!-- Dashboard  -->
           <li class="nav-item has-treeview menu-open">
-            <a href="#" class="nav-link active">
+            <a href="index.php" class="nav-link active">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 Dashboard
@@ -57,23 +57,18 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="Add_buyer.php" class="nav-link">
                       <i class="far fa-dot-circle nav-icon"></i>
                       <p>Add Buyer</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="Buyer_list.php" class="nav-link">
                       <i class="far fa-dot-circle nav-icon"></i>
                       <p>Buyer list</p>
                     </a>
                   </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="far fa-dot-circle nav-icon"></i>
-                      <p>Activate / Deactivate</p>
-                    </a>
-                  </li>
+                 
                 </ul>
               </li>
                  
@@ -88,32 +83,21 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="Add_seller.php" class="nav-link">
                       <i class="far fa-dot-circle nav-icon"></i>
                       <p>Add Seller</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="Seller_list.php" class="nav-link">
                       <i class="far fa-dot-circle nav-icon"></i>
                       <p>Sellers list</p>
                     </a>
                   </li>
+                  
+                 
                   <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="far fa-dot-circle nav-icon"></i>
-                      <p>Approval Requests</p>
-                      <span class="right badge badge-danger">New</span>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="far fa-dot-circle nav-icon"></i>
-                      <p>View Subscription</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="Product_of_sellers.php" class="nav-link">
                       <i class="far fa-dot-circle nav-icon"></i>
                       <p>View Products</p>
                     </a>
@@ -130,13 +114,13 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="Add_admin.php" class="nav-link">
                       <i class="far fa-dot-circle nav-icon"></i>
                       <p>Add Admin user</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="Admin_list.php" class="nav-link">
                       <i class="far fa-dot-circle nav-icon"></i>
                       <p>Admins list</p>
                     </a>
@@ -158,26 +142,21 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="pages/charts/chartjs.html" class="nav-link">
+                <a href="Product_list.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Products list</p>
                 </a>
               </li>
+             
               <li class="nav-item">
-                <a href="pages/charts/flot.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Activate / Deactivate</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="pages/charts/inline.html" class="nav-link">
+                <a href="Product_approvals.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Products Approvals</p>
                   <span class="badge badge-info right">6</span>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="pages/charts/inline.html" class="nav-link">
+                <a href="Low_stock_alert.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Low Stock Alerts</p>
                   <span class="badge badge-info right">6</span>
@@ -197,14 +176,14 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="pages/UI/general.html" class="nav-link">
+                <a href="New_order.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>New Orders</p>
                   <span class="right badge badge-danger">New</span>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="pages/UI/icons.html" class="nav-link">
+                <a href="Orders_list.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Orders Lists</p>
                 </a>
@@ -224,13 +203,13 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="pages/forms/general.html" class="nav-link">
+                <a href="Add_category.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Add Category</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="pages/forms/advanced.html" class="nav-link">
+                <a href="Categories_list.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Categories List</p>
                 </a>
@@ -248,15 +227,21 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="pages/tables/simple.html" class="nav-link">
+                <a href="Add_subscription.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Add Subscription</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="pages/tables/data.html" class="nav-link">
+                <a href="Subscriptions_list.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>View Subscriptions</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="New_subscriptions.php" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>New subscirptions</p>
                 </a>
               </li>
             </ul>
@@ -273,24 +258,19 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="pages/tables/simple.html" class="nav-link">
+                <a href="New_reviews.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>New Reviews</p>
                   <span class="right badge badge-danger">New</span>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="pages/tables/data.html" class="nav-link">
+                <a href="Reviews_list.php" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Reviews List</p>
                 </a>
               </li>
-              <li class="nav-item">
-                <a href="pages/tables/jsgrid.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>jsGrid</p>
-                </a>
-              </li>
+             
             </ul>
           </li>
 

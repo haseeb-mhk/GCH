@@ -29,30 +29,48 @@ if ($result && mysqli_num_rows($result) > 0) {
 }
 
 if (isset($_POST['btnSubmit'])) {
+    $check_subscription_query = mysqli_query($con, "select * from subscriptions where seller_id = '$seller_id'");
+    $check_subscription_row  = mysqli_num_rows($check_subscription_query);
+    if ($check_subscription_row > 0) {
+        $check_status = mysqli_fetch_row($check_subscription_query);
+        if ($check_status[4] == "active") {
+            // Extract data from the form
+            $productName = $_POST['product_name'];
+            $productQuantity =  $_POST['product_quantity'];
+            $productCategory =  $_POST['product_category'];
+            $productSubCategory = $_POST['product_sub_category'];
+            $productPrice =  $_POST['product_price'];
+            $productDescription =  $_POST['product_description'];
+            // Handling file uploads
+            $image1 = $_FILES['product_image1']['name'];
+            $image2 = $_FILES['product_image2']['name'];
+            $image3 = $_FILES['product_image3']['name'];
 
-    // Extract data from the form
-    $productName = $_POST['product_name'];
-    $productQuantity =  $_POST['product_quantity'];
-    $productCategory =  $_POST['product_category'];
-    $productSubCategory = $_POST['product_sub_category'];
-    $productPrice =  $_POST['product_price'];
-    $productDescription =  $_POST['product_description'];
-    // Handling file uploads
-    $image1 = $_FILES['product_image1']['name'];
-    $image2 = $_FILES['product_image2']['name'];
-    $image3 = $_FILES['product_image3']['name'];
+            // // Move uploaded files to a designated directory
+            move_uploaded_file($_FILES['product_image1']['tmp_name'], "img/productimages/" . $image1);
+            move_uploaded_file($_FILES['product_image2']['tmp_name'], "img/productimages/" . $image2);
+            move_uploaded_file($_FILES['product_image3']['tmp_name'], "img/productimages/" . $image3);
+            $insertProductQuery = "INSERT INTO products (name,seller_id, category_id, sub_category_id, price, quantity, description, image1, image2, image3) 
+            VALUES ('$productName', '$seller_id', '$productCategory', '$productSubCategory', '$productPrice', '$productQuantity','$productDescription', '$image1', '$image2', '$image3')";
 
-    // // Move uploaded files to a designated directory
-    move_uploaded_file($_FILES['product_image1']['tmp_name'], "img/productimages/" . $image1);
-    move_uploaded_file($_FILES['product_image2']['tmp_name'], "img/productimages/" . $image2);
-    move_uploaded_file($_FILES['product_image3']['tmp_name'], "img/productimages/" . $image3);
-    $insertProductQuery = "INSERT INTO products (name,seller_id, category_id, sub_category_id, price, quantity, description, image1, image2, image3) 
-    VALUES ('$productName', '$seller_id', '$productCategory', '$productSubCategory', '$productPrice', '$productQuantity','$productDescription', '$image1', '$image2', '$image3')";
-
-    if (mysqli_query($con, $insertProductQuery)) {
-        echo "Product inserted successfully.";
+            if (mysqli_query($con, $insertProductQuery)) {
+                // echo "Product inserted successfully.";
+                header('location:product_list.php');
+            } else {
+                echo "Error: " . mysqli_error($con);
+            }
+        } else {
+            echo "<script>
+            alert('Your account is not activated yet...!');
+            window.location.href = 'Subscription.php';
+          </script>";
+        }
     } else {
-        echo "Error: " . mysqli_error($con);
+        echo "<script>
+            alert('you cannot add product until you activate your account<br> subscribe to active you account');
+            window.location.href = 'Subscription.php';
+          </script>";
+        
     }
 }
 
@@ -69,17 +87,17 @@ if (isset($_GET['PID'])) {
     // query for getting category name 
 
     $query_cat = mysqli_query($con, "select * from categories where id  = '$cat_id' ");
-    if($query_cat){
-    $row_cat = mysqli_fetch_row($query_cat);
-                $Cat_name = $row_cat[1];
-}
+    if ($query_cat) {
+        $row_cat = mysqli_fetch_row($query_cat);
+        $Cat_name = $row_cat[1];
+    }
 
     // getting sub category name 
 
     $sub_cat_id  = $row_p[4];
 
     $query_sub_Cat = mysqli_query($con, "Select * from sub_categories where id  = '$sub_cat_id' ");
-    if($query_sub_Cat){
+    if ($query_sub_Cat) {
         $row_query_sub_Cat = mysqli_fetch_row($query_sub_Cat);
         $sub_cat_name = $row_query_sub_Cat[1];
     }
@@ -97,33 +115,31 @@ if (isset($_GET['PID'])) {
 
 // code for updating the data 
 
-if (isset($_POST['btnUpd'])){
+if (isset($_POST['btnUpd'])) {
 
-     // Extract data from the form
-     $productName = $_POST['product_name'];
-     $productQuantity =  $_POST['product_quantity'];
-     $productCategory =  $_POST['product_category'];
-     $productSubCategory = $_POST['product_sub_category'];
-     $productPrice =  $_POST['product_price'];
-     $productDescription =  $_POST['product_description'];
-     // Handling file uploads
-     $image1 = $_FILES['product_image1']['name'];
-     $image2 = $_FILES['product_image2']['name'];
-     $image3 = $_FILES['product_image3']['name'];
- 
-     // // Move uploaded files to a designated directory
-     move_uploaded_file($_FILES['product_image1']['tmp_name'], "img/productimages/" . $image1);
-     move_uploaded_file($_FILES['product_image2']['tmp_name'], "img/productimages/" . $image2);
-     move_uploaded_file($_FILES['product_image3']['tmp_name'], "img/productimages/" . $image3);
+    // Extracting data from the form
+    $productName = $_POST['product_name'];
+    $productQuantity =  $_POST['product_quantity'];
+    $productCategory =  $_POST['product_category'];
+    $productSubCategory = $_POST['product_sub_category'];
+    $productPrice =  $_POST['product_price'];
+    $productDescription =  $_POST['product_description'];
+    // Handling file uploads
+    $image1 = $_FILES['product_image1']['name'];
+    $image2 = $_FILES['product_image2']['name'];
+    $image3 = $_FILES['product_image3']['name'];
+
+    // // Move uploaded files to a designated directory
+    move_uploaded_file($_FILES['product_image1']['tmp_name'], "img/productimages/" . $image1);
+    move_uploaded_file($_FILES['product_image2']['tmp_name'], "img/productimages/" . $image2);
+    move_uploaded_file($_FILES['product_image3']['tmp_name'], "img/productimages/" . $image3);
 
 
-    $query_update_product = mysqli_query($con,"UPDATE products SET name='$productName',category_id='$productCategory',sub_category_id='$productSubCategory',description='$productDescription',price='$productPrice',quantity='$productQuantity',image1='$image1',image2='$image2',image3='$image3' WHERE id = '$p_id'");
-    if($query_update_product){
-                // echo "Product Updated Successfully";
-                header('location:product_list.php');
-
-    }
-    else{
+    $query_update_product = mysqli_query($con, "UPDATE products SET name='$productName',category_id='$productCategory',sub_category_id='$productSubCategory',description='$productDescription',price='$productPrice',quantity='$productQuantity',image1='$image1',image2='$image2',image3='$image3' WHERE id = '$p_id'");
+    if ($query_update_product) {
+        // echo "Product Updated Successfully";
+        header('location:product_list.php');
+    } else {
         echo (mysqli_errno($con));
     }
 }
@@ -213,7 +229,7 @@ if (isset($_POST['btnUpd'])){
                                                 <div class="form-group">
                                                     <label for="category">Category</label>
                                                     <select class="form-control" name="product_category" required id="product_category">
-                                                        <option selected value="<?php echo ($cat_id); ?>" ><?php echo $Cat_name ?></option>
+                                                        <option selected value="<?php echo ($cat_id); ?>"><?php echo $Cat_name ?></option>
                                                         <?php
                                                         $select_categories = mysqli_query($con, "Select * from categories");
 
@@ -229,7 +245,7 @@ if (isset($_POST['btnUpd'])){
                                                 <div class="form-group">
                                                     <label for="subcategory">Sub Category</label>
                                                     <select class="form-control" name="product_sub_category" required id="product_sub_category">
-                                                        <option selected value="<?php echo($sub_cat_id) ?>"><?php echo $sub_cat_name ?></option>
+                                                        <option selected value="<?php echo ($sub_cat_id) ?>"><?php echo $sub_cat_name ?></option>
                                                         <?php
                                                         $select_sub_categories = mysqli_query($con, "Select * from sub_categories");
 
@@ -273,7 +289,7 @@ if (isset($_POST['btnUpd'])){
                                             <div class="col-4">
                                                 <div class="form-group">
                                                     <label for="product_image"> Image 3</label>
-                                                    <input type="file" class="form-control-file" id="productimage1" name="product_image3" value="<?php echo $p_img3 ?>" >
+                                                    <input type="file" class="form-control-file" id="productimage1" name="product_image3" value="<?php echo $p_img3 ?>">
                                                 </div>
 
                                             </div>
@@ -282,7 +298,7 @@ if (isset($_POST['btnUpd'])){
                                         </div>
                                         <div class="form-group">
                                             <label for="exampleFormControlTextarea1">description</label>
-                                            <textarea class="form-control" id="product_description" rows="3" name="product_description" ><?php echo $p_desc ?></textarea>
+                                            <textarea class="form-control" id="product_description" rows="3" name="product_description"><?php echo $p_desc ?></textarea>
                                         </div>
                                         <input type="submit" class="btn btn-primary" value="Submit" name="btnSubmit" style="display: <?php echo $display_s ?>;">
                                         <input type="submit" class="btn btn-success" value="Update" name="btnUpd" style="display: <?php echo $display_u ?>;">
