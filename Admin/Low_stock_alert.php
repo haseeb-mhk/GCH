@@ -1,66 +1,209 @@
+<?php
+include("../includes/Connection.php");
 
+  // Fetch products for the given seller_id
+  $product_query = "
+  SELECT 
+      p.id,
+      p.name AS product_name, 
+      c.name AS category_name, 
+      sc.name AS subcategory_name, 
+      p.price, 
+      p.quantity, 
+      p.product_status 
+  FROM 
+      products p
+  JOIN 
+      categories c ON p.category_id = c.id
+  JOIN 
+      sub_categories sc ON p.sub_category_id = sc.id 
+  WHERE 
+      p.quantity < 1
+";
+
+$product_result = mysqli_query($con, $product_query);
+
+
+
+if(isset($_GET['activate_id'])){
+
+  $pid = $_GET['activate_id'];
+  // echo $pid;
+  $update_Status = mysqli_query($con,"update products SET product_status = 'active' where id = '$pid'");
+  header("location:Product_approvals.php?product_id=$pid");
+
+}
+
+
+
+if(isset($_GET['Did'])){
+  $product_id = $_GET['Did'];
+$delete_product_query = mysqli_query($con, "Delete from products where id ='$product_id'");
+if($delete_product_query){
+  header("Location: Product_approvals.php");
+
+}
+else{
+  echo "Deletion Failure";
+}
+ 
+}
+
+
+?>
 
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>GCH | Dashboard</title>
-        <?php 
-        include("includes/links.php");
-        ?>
+  <?php
+  include("includes/links.php");
+  ?>
 </head>
+
 <body class="hold-transition sidebar-mini layout-fixed">
-<div class="wrapper">
+  <div class="wrapper">
 
-  <!-- Navbar -->
-  <?php 
-        include("includes/header.php");
-        ?>
-  <!-- /.navbar -->
+    <!-- Navbar -->
+    <?php
+    include("includes/header.php");
+    ?>
+    <!-- /.navbar -->
 
-  <!-- Main Sidebar Container -->
-  <?php 
-        include("includes/sidepanel.php");
-        ?>
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0 text-dark">Product with Low Stocks </h1>
-          </div><!-- /.col -->
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-              <li class="breadcrumb-item active">Manage Products</li>
-            </ol>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
+    <!-- Main Sidebar Container -->
+    <?php
+    include("includes/sidepanel.php");
+    ?>
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h1 class="m-0 text-dark">List of products with low Stock</h1>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+                <li class="breadcrumb-item active">Products</li>
+              </ol>
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+      </div>
+      <!-- /.content-header -->
+
+      <!-- Main content -->
+      <section class="content">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title"></h3>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>S#</th>
+                  <th>Name</th>
+                  <th> Category</th>
+                  <th> Sub category</th>
+                  <th> Price </th>
+                  <th> Quantity</th>
+                  <th> Status</th>
+                  <th> Details</th>
+                  
+
+                  <th> Delete</th>
+
+                </tr>
+              </thead>
+              <tbody>
+              <?php
+                if ($product_result && mysqli_num_rows($product_result) > 0) {
+                  $i = 1;
+                    while ($row = mysqli_fetch_assoc($product_result)) {
+                        echo "<tr>";
+                        echo "<td>" . $i. "</td>";
+                        echo "<td>" . $row['product_name'] . "</td>";
+                        echo "<td>" . $row['category_name'] . "</td>";
+                        echo "<td>" . $row['subcategory_name'] . "</td>";
+                        echo "<td>" . $row['price'] . "</td>";
+                        echo "<td>" . $row['quantity'] . "</td>";
+                        echo "<td>" . $row['product_status'] . "</td>";
+                        
+                        
+                        echo "<td><a href='Product_details.php?product_id=" . $row['id'] . "' class='btn btn-info'>Details</a></td>";
+                      
+                        
+                        echo "<td><a href='Product_approvals.php?Did=" . $row['id'] . "' class='btn btn-danger' onclick='return confirm(\"Are you sure you want to delete this seller?\")'>Delete</a></td>";
+
+                        echo "</tr>";
+                        $i++;
+                    }
+                } else {
+                    echo "<tr><td colspan='8'>No products found for this seller.</td></tr>";
+                }
+                ?>
+
+
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>S#</th>
+                  <th>Name</th>
+                  <th> Category</th>
+                  <th> Sub category</th>
+                  <th> Price </th>
+                  <th> Quantity </th>
+                  <th> Status</th>
+                  <th> Details</th>
+                
+                  <th> Delete</th>
+
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <!-- /.card-body -->
+        </div>
+      </section>
+      <!-- /.content -->
     </div>
-    <!-- /.content-header -->
+    <!-- /.content-wrapper -->
+    <?php
+    include("includes/footer.php");
+    ?>
 
-    <!-- Main content -->
-    <section class="content">
-     
-    </section>
-    <!-- /.content -->
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+      <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
   </div>
-  <!-- /.content-wrapper -->
- <?php
-        include("includes/footer.php");
- ?>
-
-  <!-- Control Sidebar -->
-  <aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-  </aside>
-  <!-- /.control-sidebar -->
-</div>
-<!-- ./wrapper -->
-<?php  include('includes/jslinks.php'); ?>
+  <!-- ./wrapper -->
+  <?php include('includes/jslinks.php'); ?>
+  <script>
+    $(function() {
+      $("#example1").DataTable({
+        "responsive": true,
+        "autoWidth": false,
+      });
+      $('#example2').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": false,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+      });
+    });
+  </script>
 </body>
+
 </html>

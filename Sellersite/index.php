@@ -1,6 +1,16 @@
 <?php
 include("includes/Session.php");
 include("../includes/Connection.php");
+$user_id  = $_SESSION['user_id'];
+
+$fetch_seller_id_query = "SELECT * FROM sellers WHERE user_id = '$user_id'";
+$result = mysqli_query($con, $fetch_seller_id_query);
+if ($result && mysqli_num_rows($result) > 0) {
+    $row = mysqli_fetch_assoc($result);
+    $seller_id = $row['id'];
+}
+
+
 ?>
 
 

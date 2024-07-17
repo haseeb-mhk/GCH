@@ -38,7 +38,7 @@ if (isset($_POST['btnGoto'])) {
     // echo "Data inserted successfully";
   } catch (mysqli_sql_exception $e) {
     if (strpos($e->getMessage(), 'username') !== false) {
-      $useremail_error = " Username already exists.";
+      $username_error = " Username already exists.";
    
     } elseif (strpos($e->getMessage(), 'email') !== false) {
       $useremail_error = "Email already exists.";

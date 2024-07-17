@@ -1,46 +1,42 @@
 <?php
 include("includes/Session.php");
-// Select the buyers data 
-$query_buyers = mysqli_query($con, "SELECT 
-    users.id AS user_id, 
-    users.username, 
-    users.email,
-    users.password,
-    users.created_at,
-    buyers.id AS buyer_id, 
-    buyers.full_name, 
-    buyers.address, 
-    buyers.photo 
-FROM 
-    users
-JOIN 
-    buyers 
-ON 
-    users.id = buyers.user_id
-WHERE 
-    users.role = 'buyer';
-");
+// Select the parent category data
+
+if(isset($_GET['Uid'])){
+    
+    $parent_cat_id = $_GET['Uid'];
+    // echo $parent_cat_id;
+    $parent_cat_query = mysqli_query($con,"Select * from categories where id = '$parent_cat_id'");
+    $result_parent_cat_query = mysqli_fetch_assoc($parent_cat_query);
+    $parent_cat_name = $result_parent_cat_query['name'];
+    // echo $parent_cat_name;
+    $query_cat = mysqli_query($con, "SELECT * from sub_categories where parent_category_id = '$parent_cat_id'");
+
+
+}
+
+
 
 // Deleting the record of buyer 
 
 // Handle delete request
 if (isset($_GET['Did'])) {
-  $user_id = $_GET['Did'];
-  
-  // First delete from buyers table
-  $delete_buyer_query =  mysqli_query($con, "DELETE FROM buyers WHERE user_id = '$user_id'");
+  $cat_id = $_GET['Did'];
+  $parent_cat_id = $_GET['Uid'];
+//   header("location:sub_categories_list.php?Uid=".$parent_cat_id);
+
+  $delete_cat_query =  mysqli_query($con, "DELETE FROM sub_categories WHERE id = '$cat_id'");
  
-  if($delete_buyer_query){
-  // Then delete from users table
-  $delete_user_query = "DELETE FROM users WHERE id = '$user_id'";
-  mysqli_query($con, $delete_user_query);
+  if($delete_cat_query){
+    header("location:sub_categories_list.php?Uid=".$parent_cat_id);
+
+
   }
   else{
     echo "deletion failure";
   }
   // Redirect to avoid resubmission of the form
-  header("location:Buyer_list.php");
-  exit();
+   exit();
 }
 
 
@@ -83,12 +79,12 @@ if (isset($_GET['Did'])) {
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-6">
-              <h1 class="m-0 text-dark">Buyers List</h1>
+              <h1 class="m-0 text-dark"> "<?php echo $parent_cat_name   ?>" Sub Categories List</h1>
             </div><!-- /.col -->
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-right">
                 <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                <li class="breadcrumb-item active">Buyers</li>
+                <li class="breadcrumb-item active">Sub Categories</li>
               </ol>
             </div><!-- /.col -->
           </div><!-- /.row -->
@@ -108,11 +104,11 @@ if (isset($_GET['Did'])) {
             <table id="example1" class="table table-bordered table-striped">
               <thead>
                 <tr>
-                  <th>Photo</th>
-                  <th>Full Name</th>
-                    <th> created at</th>
-                  <th> Details</th>
-                  <th> Orders</th>
+                  <th>S#</th>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th> Created At</th>
+                  
                   <th> Edit</th>
                   <th> Delete</th>
 
@@ -120,18 +116,19 @@ if (isset($_GET['Did'])) {
               </thead>
               <tbody>
               <?php
-                        while ($row = mysqli_fetch_assoc($query_buyers)) {
+              $i = 1;
+                        while ($row = mysqli_fetch_assoc($query_cat)) {
                             echo "<tr>";
-                            echo "<td><img src='../Buyersite/buyerimages/{$row['photo']}' alt='Photo' width='50' height='50'></td>";
-                            echo "<td>{$row['full_name']}</td>";
+                            echo "<td>$i</td>";
+                            echo "<td>{$row['name']}</td>";
                            
+                            echo "<td>{$row['description']}</td>";
                             echo "<td>{$row['created_at']}</td>";
-                            echo "<td style='align-content: center;'><a href='buyer_details.php?oid=$row[user_id]' class='btn btn-warning'>Details</a></td>";
-                            echo "<td style='align-content: center;'><a href='view_order.php?oid=$row[user_id]' class='btn btn-info'>Order</a></td>";
-                            echo "<td><a href='Add_buyer.php?Uid=$row[user_id]' class='btn btn-success'>Edit</a></td>";
-                            echo "<td><a href='Buyer_list.php?Did={$row['user_id']}' class='btn btn-danger' onclick='return confirm(\"Are you sure to delete this buyer?\")'>Delete</a></td>";
-                            echo "</tr>";
-                        }
+                                echo "<td><a href='Add_sub_category.php?Uid=$row[id]' class='btn btn-success'>Edit</a></td>";
+                                echo "<td><a href='sub_categories_list.php?Did=" . $row['id'] . "&Uid=" . $parent_cat_id . "' class='btn btn-danger' onclick='return confirm(\"Are you sure to delete this Category?\")'>Delete</a></td>";
+                                echo "</tr>";
+                        $i++;
+                          }
                         ?>
 
 
@@ -139,10 +136,11 @@ if (isset($_GET['Did'])) {
               </tbody>
               <tfoot>
                 <tr>
-                  <th>Photo</th>
-                  <th>Full Name</th>
-                   <th> details </th>
-                   <th> Orders </th>
+                  <th>S#</th>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th> Created At</th>
+                
                   <th> Edit</th>
                   <th> Delete</th>
 
