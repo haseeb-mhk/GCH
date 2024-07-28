@@ -1,5 +1,5 @@
 <?php
-include("../includes/Connection.php");
+include("includes/Session.php");
 
   // Fetch products for the given seller_id
   $product_query = "

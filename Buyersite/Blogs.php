@@ -1,3 +1,37 @@
+<?php
+include('includes/Session.php');
+
+$query_blogs = mysqli_query($con, "SELECT 
+    blogs.id,
+    blogs.title,
+    blogs.content,
+    blogs.image,
+    blogs.status,
+    blogs.created_at,
+    blogs.updated_at,
+    CASE 
+        WHEN users.role = 'seller' THEN sellers.business_name
+        WHEN users.role = 'admin' THEN 'By admin'
+        ELSE users.username
+    END AS author_name
+FROM 
+    blogs
+JOIN 
+    users 
+ON 
+    blogs.user_id = users.id
+LEFT JOIN 
+    sellers 
+ON 
+    users.id = sellers.user_id
+ORDER BY 
+    blogs.created_at DESC 
+");
+
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,56 +72,25 @@
         </div>
 
         <div class="row">
+        <?php while ($row_blog_query = mysqli_fetch_assoc($query_blogs)){  ?>
           <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
             <div class="card card-blog">
               <div class="card-blog__img">
-                <img class="card-img rounded-0" src="img/blog/blog1.png" alt="">
+                <img class="card-img rounded-0" src="../Admin/img/blogimages/<?php echo $row_blog_query['image']   ?>" alt="" width="100%" height="250px">
               </div>
               <div class="card-body">
                 <ul class="card-blog__info">
-                  <li><a href="#">By Admin</a></li>
+                  <li><a href="#"><?php echo $row_blog_query['author_name']  ?></a></li>
                   <li><a href="#"><i class="ti-comments-smiley"></i> 2 Comments</a></li>
                 </ul>
-                <h4 class="card-blog__title"><a href="Single_Blog.php">The Richland Center Shooping News and weekly shooper</a></h4>
-                <p>Let one fifth i bring fly to divided face for bearing divide unto seed. Winged divided light Forth.</p>
-                <a class="card-blog__link" href="Single_Blog.php">Read More <i class="ti-arrow-right"></i></a>
+                <h4 class="card-blog__title"><a href="Single_Blog.php?BID=<?php echo $row_blog_query['id']  ?>"><?php echo $row_blog_query['title']  ?></a></h4>
+               
+               
+                <a class="card-blog__link" href="Single_Blog.php?BID=<?php echo $row_blog_query['id']  ?>">Read More <i class="ti-arrow-right"></i></a>
               </div>
             </div>
           </div>
-
-          <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
-            <div class="card card-blog">
-              <div class="card-blog__img">
-                <img class="card-img rounded-0" src="img/blog/blog2.png" alt="">
-              </div>
-              <div class="card-body">
-                <ul class="card-blog__info">
-                  <li><a href="#">By Admin</a></li>
-                  <li><a href="#"><i class="ti-comments-smiley"></i> 2 Comments</a></li>
-                </ul>
-                <h4 class="card-blog__title"><a href="single-blog.html">The Shopping News also offers top-quality printing services</a></h4>
-                <p>Let one fifth i bring fly to divided face for bearing divide unto seed. Winged divided light Forth.</p>
-                <a class="card-blog__link" href="#">Read More <i class="ti-arrow-right"></i></a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
-            <div class="card card-blog">
-              <div class="card-blog__img">
-                <img class="card-img rounded-0" src="img/blog/blog3.png" alt="">
-              </div>
-              <div class="card-body">
-                <ul class="card-blog__info">
-                  <li><a href="#">By Admin</a></li>
-                  <li><a href="#"><i class="ti-comments-smiley"></i> 2 Comments</a></li>
-                </ul>
-                <h4 class="card-blog__title"><a href="single-blog.html">Professional design staff and efficient equipment you’ll find we offer</a></h4>
-                <p>Let one fifth i bring fly to divided face for bearing divide unto seed. Winged divided light Forth.</p>
-                <a class="card-blog__link" href="#">Read More <i class="ti-arrow-right"></i></a>
-              </div>
-            </div>
-          </div>
+<?php }  ?>
         </div>
       </div>
     </section>

@@ -56,6 +56,29 @@ if ($count_low_Stock > 0) {
   $count_ls = 0;
 }
 
+
+
+// for new subscription count 
+$new_subscriptions_count_query = mysqli_query($con, "
+    SELECT 
+        subscriptions.*, 
+        sellers.business_name 
+    FROM 
+        subscriptions
+    JOIN 
+        sellers 
+    ON 
+        subscriptions.seller_id = sellers.id
+    WHERE 
+        subscriptions.is_new = TRUE;
+");
+if(mysqli_num_rows($new_subscriptions_count_query)>0){
+  $subscription_count = mysqli_num_rows($new_subscriptions_count_query); 
+}
+else{
+  $subscription_count = "";
+}
+
 ?>
 
 
@@ -318,6 +341,24 @@ if ($count_low_Stock > 0) {
             <p>
               Manage subscriptions
               <i class="fas fa-angle-left right"></i>
+
+                    <?php   
+                    if(mysqli_num_rows($new_subscriptions_count_query)>0){
+                    
+                    
+                    ?>
+                    <span class="right badge badge-danger"><?php echo $subscription_count   ?></span>
+                    
+                    <?php 
+                    
+                    }
+                    else{
+                     
+                    }
+                    
+                    ?>
+
+              
             </p>
           </a>
           <ul class="nav nav-treeview">
@@ -336,7 +377,33 @@ if ($count_low_Stock > 0) {
             <li class="nav-item">
               <a href="New_subscriptions.php" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>New subscirptions</p>
+                <p>New subscirptions
+                <?php   
+                    if(mysqli_num_rows($new_subscriptions_count_query)>0){
+                    
+                    
+                    ?>
+                    <span class="right badge badge-danger"><?php echo $subscription_count   ?></span>
+                    
+                    <?php 
+                    
+                    }
+                    else{
+                     
+                    }
+                    
+                    ?>
+
+
+                </p>
+                
+                
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="near_expiry_subscriptions.php" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Near expirey Subscriptions</p>
               </a>
             </li>
           </ul>
@@ -368,6 +435,39 @@ if ($count_low_Stock > 0) {
 
           </ul>
         </li>
+
+            <!-- Manage blogs  -->
+            <li class="nav-item has-treeview">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-comments"></i>
+            <p>
+              Manage Blogs
+              <i class="fas fa-angle-left right"></i>
+              <span class="right badge badge-danger">New</span>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="Add_blogs.php" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Add Blogs</p></a>
+            </li>
+            <li class="nav-item">
+              <a href="Blogs_list.php" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Blogs List</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="Blogs_approvals.php" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Blogs approvals</p>
+              </a>
+            </li>
+
+          </ul>
+        </li>
+
 
       </ul>
     </nav>

@@ -1,5 +1,5 @@
 <?php
-include("../includes/Connection.php");
+include("includes/Session.php");
 if (isset($_GET['Sid'])) {
   $seller_id = $_GET['Sid'];
 

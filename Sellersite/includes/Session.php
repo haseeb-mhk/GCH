@@ -6,5 +6,11 @@ if (!isset($_SESSION["role"]) || $_SESSION["role"] != "seller")  {
   exit();
 }
 
+$name = $_SESSION['username'];
+if(isset($_POST["btnLogout"])){
 
+    session_destroy();
+    header("location:../Buyersite/index.php");
+    
+}
 ?>

@@ -1,3 +1,69 @@
+<?php
+include('includes/Session.php');
+
+// for selecting categories 
+$query_select_categories = mysqli_query($con, "SELECT * from categories");
+
+
+// for selecting the products LIMIT by 8
+$query_select_products = mysqli_query($con, "SELECT 
+  products.id,
+  products.name,
+  categories.name AS category_name,
+  sub_categories.name AS sub_category_name,
+  products.price,
+  products.quantity,
+  products.image1,
+  products.product_status
+  
+FROM 
+  products
+JOIN 
+  categories 
+ON 
+  products.category_id = categories.id
+JOIN 
+  sub_categories 
+ON 
+  products.sub_category_id = sub_categories.id
+WHERE 
+  products.product_status = 'active'
+LIMIT 8;
+");
+
+// selecting blogs 
+$query_blogs = mysqli_query($con, "SELECT 
+    blogs.id,
+    blogs.title,
+    blogs.content,
+    blogs.image,
+    blogs.status,
+    blogs.created_at,
+    blogs.updated_at,
+    CASE 
+        WHEN users.role = 'seller' THEN sellers.business_name
+        WHEN users.role = 'admin' THEN 'By admin'
+        ELSE users.username
+    END AS author_name
+FROM 
+    blogs
+JOIN 
+    users 
+ON 
+    blogs.user_id = users.id
+LEFT JOIN 
+    sellers 
+ON 
+    users.id = sellers.user_id
+ORDER BY 
+    blogs.created_at DESC LIMIT 3
+");
+
+
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,10 +72,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>GCH | Home</title>
-  
-  <?php 
-  include ("includes/Links.php")
-   ?>
+
+  <?php
+  include("includes/Links.php")
+  ?>
+
+  <style>
+    .image-container {
+      width: 400px;
+      height: 400px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .square-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
 
 
 
@@ -18,10 +101,10 @@
 <body>
   <!--================ Start Header Menu Area =================-->
 
-<?php   
-include("includes/header.php");
+  <?php
+  include("includes/header.php");
 
-?>
+  ?>
 
   <!-- <header class="header_area">
     <div class="main_menu">
@@ -96,27 +179,29 @@ include("includes/header.php");
     <!--================ Hero Carousel start =================-->
     <section class="section-margin mt-0">
       <div class="owl-carousel owl-theme hero-carousel">
-        <div class="hero-carousel__slide">
-          <img src="img/home/hero-slide1.png" alt="" class="img-fluid">
-          <a href="shop.php" class="hero-carousel__slideOverlay">
-            <h3>Fashion and Apparel</h3>
-            <p>Cloth, Shawls, Purse....</p>
-          </a>
-        </div>
-        <div class="hero-carousel__slide">
-          <img src="img/home/hero-slide2.png" alt="" class="img-fluid">
-          <a href="shop.php" class="hero-carousel__slideOverlay">
-            <h3>Babies and Kids</h3>
-            <p>Toys, Blankets, Clothing....</p>
-          </a>
-        </div>
-        <div class="hero-carousel__slide">
-          <img src="img/home/hero-slide3.png" alt="" class="img-fluid">
-          <a href="shop.php" class="hero-carousel__slideOverlay">
-            <h3>Furnitures</h3>
-            <p>Beds, Tables, Cupboards....</p>
-          </a>
-        </div>
+
+        <?php
+        while ($row_category = mysqli_fetch_assoc($query_select_categories)) {
+
+
+
+
+
+        ?>
+
+
+          <div class="hero-carousel__slide">
+            <div class="image-container">
+              <img src="../Sellersite/img/Categoriesimages/<?php echo $row_category['image']; ?>" alt="image not found" class="square-image">
+            </div>
+            <a href="shop.php?Cat_id=<?php echo $row_category['id']; ?>" class="hero-carousel__slideOverlay">
+              <h3><?php echo $row_category['name']; ?></h3>
+            </a>
+          </div>
+
+        <?php  }  ?>
+
+
       </div>
     </section>
     <!--================ Hero Carousel end =================-->
@@ -126,145 +211,31 @@ include("includes/header.php");
       <div class="container">
         <div class="section-intro pb-60px">
           <p>Popular Item in the market</p>
-          <h2>Trending <span class="section-intro__style">Product</span></h2>
+          <h2>Top Pickups <span class="section-intro__style">Foryou</span></h2>
         </div>
         <div class="row">
-          <div class="col-md-6 col-lg-4 col-xl-3">
-            <div class="card text-center card-product">
-              <div class="card-product__img">
-                <img class="card-img" src="img/product/product1.png" alt="">
-                <ul class="card-product__imgOverlay">
-                  <li><button><i class="ti-search"></i></button></li>
-                  <li><button><i class="ti-shopping-cart"></i></button></li>
-                  <li><button><i class="ti-heart"></i></button></li>
-                </ul>
-              </div>
-              <div class="card-body">
-                <p>Accessories</p>
-                <h4 class="card-product__title"><a href="single-product.html">Quartz Belt Watch</a></h4>
-                <p class="card-product__price">$150.00</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 col-lg-4 col-xl-3">
-            <div class="card text-center card-product">
-              <div class="card-product__img">
-                <img class="card-img" src="img/product/product2.png" alt="">
-                <ul class="card-product__imgOverlay">
-                  <li><button><i class="ti-search"></i></button></li>
-                  <li><button><i class="ti-shopping-cart"></i></button></li>
-                  <li><button><i class="ti-heart"></i></button></li>
-                </ul>
-              </div>
-              <div class="card-body">
-                <p>Beauty</p>
-                <h4 class="card-product__title"><a href="single-product.html">Women Freshwash</a></h4>
-                <p class="card-product__price">$150.00</p>
+
+
+          <?php while ($row_products = mysqli_fetch_assoc($query_select_products)) {  ?>
+            <div class="col-md-6 col-lg-4 col-xl-3">
+              <div class="card text-center card-product">
+                <div class="card-product__img">
+                  <img class="card-img" src="../Sellersite/img/productimages/<?php echo $row_products['image1']   ?>" alt="">
+                  <ul class="card-product__imgOverlay">
+                    
+                    <li><button><i class="ti-shopping-cart"></i></button></li>
+                    <li><button><i class="ti-heart"></i></button></li>
+                  </ul>
+                </div>
+                <div class="card-body">
+                  <p><?php echo $row_products['category_name']  ?></p>
+                  <h4 class="card-product__title"><a href="Single_product.php?PID=<?php echo $row_products['id'];  ?>"><?php echo $row_products['name']  ?></a></h4>
+                  <p class="card-product__price">RS. <?php echo $row_products['price']  ?></p>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="col-md-6 col-lg-4 col-xl-3">
-            <div class="card text-center card-product">
-              <div class="card-product__img">
-                <img class="card-img" src="img/product/product3.png" alt="">
-                <ul class="card-product__imgOverlay">
-                  <li><button><i class="ti-search"></i></button></li>
-                  <li><button><i class="ti-shopping-cart"></i></button></li>
-                  <li><button><i class="ti-heart"></i></button></li>
-                </ul>
-              </div>
-              <div class="card-body">
-                <p>Decor</p>
-                <h4 class="card-product__title"><a href="single-product.html">Room Flash Light</a></h4>
-                <p class="card-product__price">$150.00</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 col-lg-4 col-xl-3">
-            <div class="card text-center card-product">
-              <div class="card-product__img">
-                <img class="card-img" src="img/product/product4.png" alt="">
-                <ul class="card-product__imgOverlay">
-                  <li><button><i class="ti-search"></i></button></li>
-                  <li><button><i class="ti-shopping-cart"></i></button></li>
-                  <li><button><i class="ti-heart"></i></button></li>
-                </ul>
-              </div>
-              <div class="card-body">
-                <p>Decor</p>
-                <h4 class="card-product__title"><a href="single-product.html">Room Flash Light</a></h4>
-                <p class="card-product__price">$150.00</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 col-lg-4 col-xl-3">
-            <div class="card text-center card-product">
-              <div class="card-product__img">
-                <img class="card-img" src="img/product/product5.png" alt="">
-                <ul class="card-product__imgOverlay">
-                  <li><button><i class="ti-search"></i></button></li>
-                  <li><button><i class="ti-shopping-cart"></i></button></li>
-                  <li><button><i class="ti-heart"></i></button></li>
-                </ul>
-              </div>
-              <div class="card-body">
-                <p>Accessories</p>
-                <h4 class="card-product__title"><a href="single-product.html">Man Office Bag</a></h4>
-                <p class="card-product__price">$150.00</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 col-lg-4 col-xl-3">
-            <div class="card text-center card-product">
-              <div class="card-product__img">
-                <img class="card-img" src="img/product/product6.png" alt="">
-                <ul class="card-product__imgOverlay">
-                  <li><button><i class="ti-search"></i></button></li>
-                  <li><button><i class="ti-shopping-cart"></i></button></li>
-                  <li><button><i class="ti-heart"></i></button></li>
-                </ul>
-              </div>
-              <div class="card-body">
-                <p>Kids Toy</p>
-                <h4 class="card-product__title"><a href="single-product.html">Charging Car</a></h4>
-                <p class="card-product__price">$150.00</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 col-lg-4 col-xl-3">
-            <div class="card text-center card-product">
-              <div class="card-product__img">
-                <img class="card-img" src="img/product/product7.png" alt="">
-                <ul class="card-product__imgOverlay">
-                  <li><button><i class="ti-search"></i></button></li>
-                  <li><button><i class="ti-shopping-cart"></i></button></li>
-                  <li><button><i class="ti-heart"></i></button></li>
-                </ul>
-              </div>
-              <div class="card-body">
-                <p>Accessories</p>
-                <h4 class="card-product__title"><a href="single-product.html">Blutooth Speaker</a></h4>
-                <p class="card-product__price">$150.00</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 col-lg-4 col-xl-3">
-            <div class="card text-center card-product">
-              <div class="card-product__img">
-                <img class="card-img" src="img/product/product8.png" alt="">
-                <ul class="card-product__imgOverlay">
-                  <li><button><i class="ti-search"></i></button></li>
-                  <li><button><i class="ti-shopping-cart"></i></button></li>
-                  <li><button><i class="ti-heart"></i></button></li>
-                </ul>
-              </div>
-              <div class="card-body">
-                <p>Kids Toy</p>
-                <h4 class="card-product__title"><a href="#">Charging Car</a></h4>
-                <p class="card-product__price">$150.00</p>
-              </div>
-            </div>
-          </div>
+          <?php  }  ?>
+
         </div>
       </div>
     </section>
@@ -280,7 +251,7 @@ include("includes/header.php");
         <h3>New Arrival!</h3>
         <h4>Woolen Shawl</h4>
         <p>A beautiful handmade Shawl with unique art</p>
-        <a class="button button--active mt-3 mt-xl-4" href="#">Shop Now</a>
+        <a class="button button--active mt-3 mt-xl-4" href="shop.php">Shop Now</a>
       </div>
 
 
@@ -302,56 +273,29 @@ include("includes/header.php");
         </div>
 
         <div class="row">
+
+
+        <?php while ($row_blog_query = mysqli_fetch_assoc($query_blogs)){  ?>
           <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
             <div class="card card-blog">
               <div class="card-blog__img">
-                <img class="card-img rounded-0" src="img/blog/blog1.png" alt="">
+                <img class="card-img rounded-0" src="../Admin/img/blogimages/<?php echo $row_blog_query['image']   ?>" alt="" width="100%" height="250px">
               </div>
               <div class="card-body">
                 <ul class="card-blog__info">
-                  <li><a href="#">By Admin</a></li>
-
-                </ul>
-                <h4 class="card-blog__title"><a href="single-blog.html">The Richland Center Shooping News and weekly shooper</a></h4>
-                <p>Let one fifth i bring fly to divided face for bearing divide unto seed. Winged divided light Forth.</p>
-                <a class="card-blog__link" href="#">Read More <i class="ti-arrow-right"></i></a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
-            <div class="card card-blog">
-              <div class="card-blog__img">
-                <img class="card-img rounded-0" src="img/blog/blog2.png" alt="">
-              </div>
-              <div class="card-body">
-                <ul class="card-blog__info">
-                  <li><a href="#">By Admin</a></li>
+                  <li><a href="#"><?php echo $row_blog_query['author_name']  ?></a></li>
                   <li><a href="#"><i class="ti-comments-smiley"></i> 2 Comments</a></li>
                 </ul>
-                <h4 class="card-blog__title"><a href="single-blog.html">The Shopping News also offers top-quality printing services</a></h4>
-                <p>Let one fifth i bring fly to divided face for bearing divide unto seed. Winged divided light Forth.</p>
-                <a class="card-blog__link" href="#">Read More <i class="ti-arrow-right"></i></a>
+                <h4 class="card-blog__title"><a href="Single_Blog.php?BID=<?php echo $row_blog_query['id']  ?>"><?php echo $row_blog_query['title']  ?></a></h4>
+               
+               
+                <a class="card-blog__link" href="Single_Blog.php?BID=<?php echo $row_blog_query['id']  ?>">Read More <i class="ti-arrow-right"></i></a>
               </div>
             </div>
           </div>
+<?php }  ?>
 
-          <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
-            <div class="card card-blog">
-              <div class="card-blog__img">
-                <img class="card-img rounded-0" src="img/blog/blog3.png" alt="">
-              </div>
-              <div class="card-body">
-                <ul class="card-blog__info">
-                  <li><a href="#">By Admin</a></li>
-                  <li><a href="#"><i class="ti-comments-smiley"></i> 2 Comments</a></li>
-                </ul>
-                <h4 class="card-blog__title"><a href="single-blog.html">Professional design staff and efficient equipment you’ll find we offer</a></h4>
-                <p>Let one fifth i bring fly to divided face for bearing divide unto seed. Winged divided light Forth.</p>
-                <a class="card-blog__link" href="#">Read More <i class="ti-arrow-right"></i></a>
-              </div>
-            </div>
-          </div>
+
         </div>
       </div>
     </section>
@@ -359,8 +303,8 @@ include("includes/header.php");
     <hr>
 
 
-        </div>
-      </div>
+    </div>
+    </div>
     </div>
 
 
@@ -368,14 +312,14 @@ include("includes/header.php");
 
 
   <!--================ Start footer Area  =================-->
-  <?php include("includes/footer.php") 
-   ?>
+  <?php include("includes/footer.php")
+  ?>
   <!--================ End footer Area  =================-->
 
 
 
   <?php
-   include("includes/jslinks.php")  
+  include("includes/jslinks.php")
   ?>
 
 </body>

@@ -1,5 +1,5 @@
 <?php
-include("../includes/Connection.php");
+include("includes/Session.php");
 
 $username_error = "";
 $useremail_error = "";

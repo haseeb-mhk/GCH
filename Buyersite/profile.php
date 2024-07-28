@@ -1,3 +1,8 @@
+<?php
+include('includes/Session.php');
+?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -58,16 +63,6 @@
 
   <?php include "includes/header.php" ?>
  
-  <?php
-if(isset($_POST["btnlogout"])){
-
-    session_destroy();
-    header("location:../index.php");
-    
-}
-
-
-?>
 
   <!--================ End Header Menu Area =================-->
 

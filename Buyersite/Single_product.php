@@ -1,530 +1,342 @@
+<?php
+include('includes/Session.php');
+if (isset($_GET['PID'])) {
+	$product_id = $_GET['PID'];
+
+	$query_select_products = mysqli_query($con, "SELECT 
+products.id,
+products.name,
+categories.name AS category_name,
+sub_categories.name AS sub_category_name,
+products.description,
+products.price,
+products.quantity,
+products.image1,
+products.image2,
+products.image3,
+products.product_status
+
+FROM 
+products
+JOIN 
+categories 
+ON 
+products.category_id = categories.id
+JOIN 
+sub_categories 
+ON 
+products.sub_category_id = sub_categories.id
+WHERE 
+  products.id = $product_id;
+");
+	$row_query_selecy_product = mysqli_fetch_assoc($query_select_products);
+}
+
+// code for rating 
+if (isset($_POST['btnSubmit'])) {
+	$rating = $_POST['rating'];
+	$comment = $_POST['comment'];
+	$user_id = $_SESSION['user_id'];
+
+	$insert_rating = mysqli_query($con, "INSERT into reviews (product_id, user_id, rating, comment)  VALUES('$product_id','$user_id','$rating','$comment') ");
+	if ($insert_rating) {
+		header('location:Single_product.php?PID=' . $product_id);
+	}
+}
+
+
+// for adding product to cart 
+
+if (isset($_POST['btnAddtocart'])) {
+	$user_id = $_SESSION['user_id'];
+	$query_select_buyer = mysqli_query($con, "Select * from buyers where user_id = '$user_id'");
+	$query_select_buyer_row = mysqli_fetch_assoc($query_select_buyer);
+	$buyer_id = $query_select_buyer_row['id'];
+	$quantity = $_POST['qty'];
+	// Check if a cart already exists for the buyer
+	$cart_query = "SELECT id FROM carts WHERE buyer_id = $buyer_id ";
+	$cart_result = mysqli_query($con, $cart_query);
+	if (mysqli_num_rows($cart_result) > 0) {
+		$row = mysqli_fetch_assoc($cart_result);
+		$cart_id = $row['id'];
+	} else {
+		// If no cart exists, create a new one
+		$create_cart_query = "INSERT INTO carts (buyer_id) VALUES ($buyer_id)";
+		if (mysqli_query($con, $create_cart_query)) {
+			$cart_id = mysqli_insert_id($con);
+		} else {
+			die("Error creating cart: " . mysqli_error($con));
+		}
+	}
+
+	// Insert the product into the cart_item table
+	$add_to_cart_query = "INSERT INTO cart_items (cart_id, product_id, quantity) VALUES ($cart_id, $product_id, $quantity)";
+	if (mysqli_query($con, $add_to_cart_query)) {
+		echo "Product added to cart successfully!";
+
+
+		// Optionally, update the total price in the cart table
+		$update_cart_query = "UPDATE carts
+	SET total_price = (SELECT SUM(cart_items.quantity * products.price) 
+					   FROM cart_items 
+					   JOIN products ON cart_items.product_id = products.id 
+					   WHERE cart_items.cart_id = $cart_id),
+		updated_at = NOW()
+	WHERE id = $cart_id";
+		mysqli_query($con, $update_cart_query);
+		// Update the quantity of the product in the products table
+		$update_product_quantity_query = "UPDATE products 
+ SET quantity = quantity - $quantity 
+ WHERE id = $product_id";
+		if (!mysqli_query($con, $update_product_quantity_query)) {
+			die("Error updating product quantity: " . mysqli_error($con));
+		}
+		header('location:Cart.php');
+	} else {
+		die("Error adding product to cart: " . mysqli_error($con));
+	}
+}
+
+?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>GCH | Shop</title>
-  <?php include "includes/Links.php" ?>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>GCH | Shop</title>
+	<?php include "includes/Links.php" ?>
+	<style>
+		.star-rating {
+			direction: rtl;
+			display: inline-flex;
+		}
+
+		.star-rating input[type="radio"] {
+			display: none;
+		}
+
+		.star-rating label {
+			font-size: 2em;
+			color: #ddd;
+			cursor: pointer;
+			margin: 0 0.1em;
+		}
+
+		.star-rating label:before {
+			content: '★';
+		}
+
+		.star-rating input[type="radio"]:checked~label {
+			color: gold;
+		}
+
+		.star-rating label:hover,
+		.star-rating label:hover~label {
+			color: gold;
+		}
+	</style>
+
+
+
 </head>
+
+
+
 <body>
-  <!--================ Start Header Menu Area =================-->
-	
-   <?php include "includes/header.php" ?>
-  
-  
+	<!--================ Start Header Menu Area =================-->
+
+	<?php include "includes/header.php" ?>
+
+
 	<!--================ End Header Menu Area =================-->
 
-    <main class="site-main">
-
-            	
-	<!-- ================ start banner area ================= -->	
-	<section class="blog-banner-area" id="blog">
-		<div class="container h-100">
-			<div class="blog-banner">
-				<div class="text-center">
-					<h1>Shop Single</h1>
-					<nav aria-label="breadcrumb" class="banner-breadcrumb">
-            <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active" aria-current="page">Shop Single</li>
-            </ol>
-          </nav>
-				</div>
-			</div>
-    </div>
-	</section>
-	<!-- ================ end banner area ================= -->
+	<main class="site-main">
 
 
-  <!--================Single Product Area =================-->
-	<div class="product_image_area">
-		<div class="container">
-			<div class="row s_product_inner">
-				<div class="col-lg-6">
-					<div class="owl-carousel owl-theme s_Product_carousel">
-						<div class="single-prd-item">
-							<img class="img-fluid" src="img/category/s-p1.jpg" alt="">
+		<!--================Single Product Area =================-->
+		<div class="product_image_area">
+			<div class="container">
+				<div class="row s_product_inner">
+					<div class="col-lg-6">
+						<div class="owl-carousel owl-theme s_Product_carousel" style="">
+							<div class="single-prd-item">
+								<img class="img-fluid" src="../Sellersite/img/productimages/<?php echo $row_query_selecy_product['image1'] ?>" alt="">
+							</div>
+							<div class="single-prd-item">
+								<img class="img-fluid" src="../Sellersite/img/productimages/<?php echo $row_query_selecy_product['image2'] ?>" alt="">
+							</div>
+							<div class="single-prd-item">
+								<img class="img-fluid" src="../Sellersite/img/productimages/<?php echo $row_query_selecy_product['image3'] ?>" alt="">
+							</div>
 						</div>
-						<!-- <div class="single-prd-item">
-							<img class="img-fluid" src="img/category/s-p1.jpg" alt="">
-						</div>
-						<div class="single-prd-item">
-							<img class="img-fluid" src="img/category/s-p1.jpg" alt="">
-						</div> -->
 					</div>
-				</div>
-				<div class="col-lg-5 offset-lg-1">
-					<div class="s_product_text">
-						<h3>Faded SkyBlu Denim Jeans</h3>
-						<h2>$149.99</h2>
-						<ul class="list">
-							<li><a class="active" href="#"><span>Category</span> : Household</a></li>
-							<li><a href="#"><span>Availibility</span> : In Stock</a></li>
-						</ul>
-						<p>Mill Oil is an innovative oil filled radiator with the most modern technology. If you are looking for
-							something that can make your interior look awesome, and at the same time give you the pleasant warm feeling
-							during the winter.</p>
-						<div class="product_count">
-              <label for="qty">Quantity:</label>
-              <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
-							 class="increase items-count" type="button"><i class="ti-angle-left"></i></button>
-							<input type="text" name="qty" id="sst" size="2" maxlength="12" value="1" title="Quantity:" class="input-text qty">
-							
-							<a class="button primary-btn" href="Cart.php">Add to Cart</a>               
-						</div>
-						<div class="card_area d-flex align-items-center">
-							<a class="icon_btn" href="#"><i class="lnr lnr lnr-diamond"></i></a>
-							<a class="icon_btn" href="#"><i class="lnr lnr lnr-heart"></i></a>
+					<div class="col-lg-5 offset-lg-1">
+						<div class="s_product_text">
+							<h3><?php echo $row_query_selecy_product['name'];  ?></h3>
+							<h2>RS. <?php echo $row_query_selecy_product['price'];  ?></h2>
+							<ul class="list">
+								<li><a class="active" href="#"><span>Category</span> : <?php echo $row_query_selecy_product['category_name'];  ?></a></li>
+								<li><a href="#"><span>Availibility</span> : <?php
+
+																			if ($row_query_selecy_product['quantity'] > 0) {
+																				echo "In Stock";
+																			} else {
+																				echo " Not In Stock";
+																			}
+
+																			?></a></li>
+							</ul>
+							<p><?php echo $row_query_selecy_product['description']   ?></p>
+							<form method="post">
+
+								<div class="product_count">
+									<label for="qty">Quantity:</label>
+									<input type="text" name="qty" id="sst" size="2" maxlength="12" value="1" title="Quantity:" class="input-text qty">
+
+
+								</div>
+
+
+								<input type="submit" class="button primary-btn" name="btnAddtocart" value="Add to Cart">
+							</form>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<!--================End Single Product Area =================-->
+		<!--================End Single Product Area =================-->
 
-	<!--================Product Description Area =================-->
-	<section class="product_description_area">
-		<div class="container">
-			<ul class="nav nav-tabs" id="myTab" role="tablist">
-				<li class="nav-item">
-					<a class="nav-link" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Description</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile"
-					 aria-selected="false">Specification</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact"
-					 aria-selected="false">Comments</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link active" id="review-tab" data-toggle="tab" href="#review" role="tab" aria-controls="review"
-					 aria-selected="false">Reviews</a>
-				</li>
-			</ul>
-			<div class="tab-content" id="myTabContent">
-				<div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
-					<p>Beryl Cook is one of Britains most talented and amusing artists .Beryls pictures feature women of all shapes
-						and sizes enjoying themselves .Born between the two world wars, Beryl Cook eventually left Kendrick School in
-						Reading at the age of 15, where she went to secretarial school and then into an insurance office. After moving to
-						London and then Hampton, she eventually married her next door neighbour from Reading, John Cook. He was an
-						officer in the Merchant Navy and after he left the sea in 1956, they bought a pub for a year before John took a
-						job in Southern Rhodesia with a motor company. Beryl bought their young son a box of watercolours, and when
-						showing him how to use it, she decided that she herself quite enjoyed painting. John subsequently bought her a
-						childs painting set for her birthday and it was with this that she produced her first significant work, a
-						half-length portrait of a dark-skinned lady with a vacant expression and large drooping breasts. It was aptly
-						named Hangover by Beryls husband and</p>
-					<p>It is often frustrating to attempt to plan meals that are designed for one. Despite this fact, we are seeing
-						more and more recipe books and Internet websites that are dedicated to the act of cooking for one. Divorce and
-						the death of spouses or grown children leaving for college are all reasons that someone accustomed to cooking for
-						more than one would suddenly need to learn how to adjust all the cooking practices utilized before into a
-						streamlined plan of cooking that is more efficient for one person creating less</p>
-				</div>
-				<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-					<div class="table-responsive">
-						<table class="table">
-							<tbody>
-								<tr>
-									<td>
-										<h5>Width</h5>
-									</td>
-									<td>
-										<h5>128mm</h5>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<h5>Height</h5>
-									</td>
-									<td>
-										<h5>508mm</h5>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<h5>Depth</h5>
-									</td>
-									<td>
-										<h5>85mm</h5>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<h5>Weight</h5>
-									</td>
-									<td>
-										<h5>52gm</h5>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<h5>Quality checking</h5>
-									</td>
-									<td>
-										<h5>yes</h5>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<h5>Freshness Duration</h5>
-									</td>
-									<td>
-										<h5>03days</h5>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<h5>When packeting</h5>
-									</td>
-									<td>
-										<h5>Without touch of hand</h5>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<h5>Each Box contains</h5>
-									</td>
-									<td>
-										<h5>60pcs</h5>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-				<div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-					<div class="row">
-						<div class="col-lg-6">
-							<div class="comment_list">
-								<div class="review_item">
-									<div class="media">
-										<div class="d-flex">
-											<img src="img/product/review-1.png" alt="">
+		<!--================Product Description Area =================-->
+		<section class="product_description_area">
+			<div class="container">
+				<ul class="nav nav-tabs" id="myTab" role="tablist">
+					<li class="nav-item">
+						<a class="nav-link active" id="review-tab" data-toggle="tab" href="#review" role="tab" aria-controls="review" aria-selected="false">Reviews</a>
+					</li>
+				</ul>
+				<div class="tab-content" id="myTabContent">
+
+					<div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
+						<div class="row">
+							<div class="col-lg-6">
+
+								<div class="review_list">
+
+
+									<?php
+									$query_reviews = "
+							SELECT 
+								reviews.rating, 
+								reviews.comment, 
+								reviews.review_date,  
+								buyers.full_name, 
+								buyers.photo 
+							FROM 
+								reviews 
+							JOIN 
+								users 
+							ON 
+								reviews.user_id = users.id 
+							JOIN 
+								buyers 
+							ON 
+								users.id = buyers.user_id 
+							WHERE 
+								reviews.product_id = '$product_id' 
+							ORDER BY 
+								reviews.review_date DESC
+						";
+
+									$result_reviews = mysqli_query($con, $query_reviews);
+									while ($row_reviews = mysqli_fetch_assoc($result_reviews)) {
+									?>
+										<div class="review_item">
+											<div class="media">
+												<div class="d-flex">
+													<img src="buyerimages/<?php echo $row_reviews['photo']  ?>" alt="" width="70px" height="71px" style="border-radius: 50%;">
+												</div>
+												<div class="media-body">
+													<h4><?php echo $row_reviews['full_name']  ?></h4>
+													<p><?php echo date('d-m-Y', strtotime($row_reviews['review_date'])); ?>
+													</p>
+
+													<?php
+													$star_count = $row_reviews['rating'];
+													for ($i = 1; $i <= $star_count; $i++) {  ?>
+
+														<i class="fa fa-star"></i>
+													<?php
+													}
+
+													?>
+
+
+
+												</div>
+											</div>
+											<p><?php echo $row_reviews['comment']  ?></p>
 										</div>
-										<div class="media-body">
-											<h4>Blake Ruiz</h4>
-											<h5>12th Feb, 2018 at 05:56 pm</h5>
-											<a class="reply_btn" href="#">Reply</a>
-										</div>
-									</div>
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-										dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-										commodo</p>
-								</div>
-								<div class="review_item reply">
-									<div class="media">
-										<div class="d-flex">
-											<img src="img/product/review-2.png" alt="">
-										</div>
-										<div class="media-body">
-											<h4>Blake Ruiz</h4>
-											<h5>12th Feb, 2018 at 05:56 pm</h5>
-											<a class="reply_btn" href="#">Reply</a>
-										</div>
-									</div>
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-										dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-										commodo</p>
-								</div>
-								<div class="review_item">
-									<div class="media">
-										<div class="d-flex">
-											<img src="img/product/review-3.png" alt="">
-										</div>
-										<div class="media-body">
-											<h4>Blake Ruiz</h4>
-											<h5>12th Feb, 2018 at 05:56 pm</h5>
-											<a class="reply_btn" href="#">Reply</a>
-										</div>
-									</div>
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-										dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-										commodo</p>
+									<?php   } ?>
 								</div>
 							</div>
-						</div>
-						<div class="col-lg-6">
-							<div class="review_box">
-								<h4>Post a comment</h4>
-								<form class="row contact_form" action="contact_process.php" method="post" id="contactForm" novalidate="novalidate">
-									<div class="col-md-12">
+							<div class="col-lg-6">
+								<div class="review_box">
+
+
+									<form class="form-contact form-review mt-3" method="post">
+
 										<div class="form-group">
-											<input type="text" class="form-control" id="name" name="name" placeholder="Your Full name">
+											<label for="rating">Give Rating:</label><br>
+											<div class="star-rating">
+												<input type="radio" id="star5" name="rating" value="5" required /><label for="star5" title="Excellent"></label>
+												<input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="Good"></label>
+												<input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="Okay"></label>
+												<input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="Bad"></label>
+												<input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="Very Bad"></label>
+											</div>
 										</div>
-									</div>
-									<div class="col-md-12">
+
+
+
 										<div class="form-group">
-											<input type="email" class="form-control" id="email" name="email" placeholder="Email Address">
+											<input class="form-control" name="name" type="text" placeholder="Enter your name" required>
 										</div>
-									</div>
-									<div class="col-md-12">
 										<div class="form-group">
-											<input type="text" class="form-control" id="number" name="number" placeholder="Phone Number">
+											<input class="form-control" name="email" type="email" placeholder="Enter email address" required>
 										</div>
-									</div>
-									<div class="col-md-12">
+
 										<div class="form-group">
-											<textarea class="form-control" name="message" id="message" rows="1" placeholder="Message"></textarea>
+											<textarea class="form-control different-control w-100" name="comment" id="textarea" cols="30" rows="5" placeholder="Enter your Message"></textarea>
 										</div>
-									</div>
-									<div class="col-md-12 text-right">
-										<button type="submit" value="submit" class="btn primary-btn">Submit Now</button>
-									</div>
-								</form>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="tab-pane fade show active" id="review" role="tabpanel" aria-labelledby="review-tab">
-					<div class="row">
-						<div class="col-lg-6">
-							<div class="row total_rate">
-								<div class="col-6">
-									<div class="box_total">
-										<h5>Overall</h5>
-										<h4>4.0</h4>
-										<h6>(03 Reviews)</h6>
-									</div>
+										<div class="form-group text-center text-md-right mt-3">
+											<button type="submit" class="button button--active button-review" name="btnSubmit">Submit Now</button>
+										</div>
+									</form>
 								</div>
-								<div class="col-6">
-									<div class="rating_list">
-										<h3>Based on 3 Reviews</h3>
-										<ul class="list">
-											<li><a href="#">5 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
-													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-											<li><a href="#">4 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
-													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-											<li><a href="#">3 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
-													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-											<li><a href="#">2 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
-													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-											<li><a href="#">1 Star <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i
-													 class="fa fa-star"></i><i class="fa fa-star"></i> 01</a></li>
-										</ul>
-									</div>
-								</div>
-							</div>
-							<div class="review_list">
-								<div class="review_item">
-									<div class="media">
-										<div class="d-flex">
-											<img src="img/product/review-1.png" alt="">
-										</div>
-										<div class="media-body">
-											<h4>Blake Ruiz</h4>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-										</div>
-									</div>
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-										dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-										commodo</p>
-								</div>
-								<div class="review_item">
-									<div class="media">
-										<div class="d-flex">
-											<img src="img/product/review-2.png" alt="">
-										</div>
-										<div class="media-body">
-											<h4>Blake Ruiz</h4>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-										</div>
-									</div>
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-										dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-										commodo</p>
-								</div>
-								<div class="review_item">
-									<div class="media">
-										<div class="d-flex">
-											<img src="img/product/review-3.png" alt="">
-										</div>
-										<div class="media-body">
-											<h4>Blake Ruiz</h4>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-										</div>
-									</div>
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-										dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-										commodo</p>
-								</div>
-							</div>
-						</div>
-						<div class="col-lg-6">
-							<div class="review_box">
-								<h4>Add a Review</h4>
-								<p>Your Rating:</p>
-								<ul class="list">
-									<li><a href="#"><i class="fa fa-star"></i></a></li>
-									<li><a href="#"><i class="fa fa-star"></i></a></li>
-									<li><a href="#"><i class="fa fa-star"></i></a></li>
-									<li><a href="#"><i class="fa fa-star"></i></a></li>
-									<li><a href="#"><i class="fa fa-star"></i></a></li>
-								</ul>
-								<p>Outstanding</p>
-                <form action="#/" class="form-contact form-review mt-3">
-                  <div class="form-group">
-                    <input class="form-control" name="name" type="text" placeholder="Enter your name" required>
-                  </div>
-                  <div class="form-group">
-                    <input class="form-control" name="email" type="email" placeholder="Enter email address" required>
-                  </div>
-                  <div class="form-group">
-                    <input class="form-control" name="subject" type="text" placeholder="Enter Subject">
-                  </div>
-                  <div class="form-group">
-                    <textarea class="form-control different-control w-100" name="textarea" id="textarea" cols="30" rows="5" placeholder="Enter Message"></textarea>
-                  </div>
-                  <div class="form-group text-center text-md-right mt-3">
-                    <button type="submit" class="button button--active button-review">Submit Now</button>
-                  </div>
-                </form>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	</section>
-	<!--================End Product Description Area =================-->
-
-	<!--================ Start related Product area =================-->  
-	<section class="related-product-area section-margin--small mt-0">
-		<div class="container">
-			<div class="section-intro pb-60px">
-        <p>Popular Item in the market</p>
-        <h2>Top <span class="section-intro__style">Product</span></h2>
-      </div>
-			<div class="row mt-30">
-        <div class="col-sm-6 col-xl-3 mb-4 mb-xl-0">
-          <div class="single-search-product-wrapper">
-            <div class="single-search-product d-flex">
-              <a href="#"><img src="img/product/product-sm-1.png" alt=""></a>
-              <div class="desc">
-                  <a href="#" class="title">Gray Coffee Cup</a>
-                  <div class="price">$170.00</div>
-              </div>
-            </div>
-            <div class="single-search-product d-flex">
-              <a href="#"><img src="img/product/product-sm-2.png" alt=""></a>
-              <div class="desc">
-                <a href="#" class="title">Gray Coffee Cup</a>
-                <div class="price">$170.00</div>
-              </div>
-            </div>
-            <div class="single-search-product d-flex">
-              <a href="#"><img src="img/product/product-sm-3.png" alt=""></a>
-              <div class="desc">
-                <a href="#" class="title">Gray Coffee Cup</a>
-                <div class="price">$170.00</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-sm-6 col-xl-3 mb-4 mb-xl-0">
-          <div class="single-search-product-wrapper">
-            <div class="single-search-product d-flex">
-              <a href="#"><img src="img/product/product-sm-4.png" alt=""></a>
-              <div class="desc">
-                  <a href="#" class="title">Gray Coffee Cup</a>
-                  <div class="price">$170.00</div>
-              </div>
-            </div>
-            <div class="single-search-product d-flex">
-              <a href="#"><img src="img/product/product-sm-5.png" alt=""></a>
-              <div class="desc">
-                <a href="#" class="title">Gray Coffee Cup</a>
-                <div class="price">$170.00</div>
-              </div>
-            </div>
-            <div class="single-search-product d-flex">
-              <a href="#"><img src="img/product/product-sm-6.png" alt=""></a>
-              <div class="desc">
-                <a href="#" class="title">Gray Coffee Cup</a>
-                <div class="price">$170.00</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-sm-6 col-xl-3 mb-4 mb-xl-0">
-          <div class="single-search-product-wrapper">
-            <div class="single-search-product d-flex">
-              <a href="#"><img src="img/product/product-sm-7.png" alt=""></a>
-              <div class="desc">
-                  <a href="#" class="title">Gray Coffee Cup</a>
-                  <div class="price">$170.00</div>
-              </div>
-            </div>
-            <div class="single-search-product d-flex">
-              <a href="#"><img src="img/product/product-sm-8.png" alt=""></a>
-              <div class="desc">
-                <a href="#" class="title">Gray Coffee Cup</a>
-                <div class="price">$170.00</div>
-              </div>
-            </div>
-            <div class="single-search-product d-flex">
-              <a href="#"><img src="img/product/product-sm-9.png" alt=""></a>
-              <div class="desc">
-                <a href="#" class="title">Gray Coffee Cup</a>
-                <div class="price">$170.00</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-sm-6 col-xl-3 mb-4 mb-xl-0">
-          <div class="single-search-product-wrapper">
-            <div class="single-search-product d-flex">
-              <a href="#"><img src="img/product/product-sm-1.png" alt=""></a>
-              <div class="desc">
-                  <a href="#" class="title">Gray Coffee Cup</a>
-                  <div class="price">$170.00</div>
-              </div>
-            </div>
-            <div class="single-search-product d-flex">
-              <a href="#"><img src="img/product/product-sm-2.png" alt=""></a>
-              <div class="desc">
-                <a href="#" class="title">Gray Coffee Cup</a>
-                <div class="price">$170.00</div>
-              </div>
-            </div>
-            <div class="single-search-product d-flex">
-              <a href="#"><img src="img/product/product-sm-3.png" alt=""></a>
-              <div class="desc">
-                <a href="#" class="title">Gray Coffee Cup</a>
-                <div class="price">$170.00</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-		</div>
-	</section>
-	<!--================ end related Product area =================-->  
-
-    </main>
+		</section>
+		<!--================End Product Description Area =================-->
 
 
-  <!--================ Start footer Area  =================-->	
-               <?php include("includes/footer.php")  ?> 
+	</main>
+
+
+	<!--================ Start footer Area  =================-->
+	<?php include("includes/footer.php")  ?>
 	<!--================ End footer Area  =================-->
 
-    
-    <?php include("includes/jslinks.php")  ?>
+
+	<?php include("includes/jslinks.php")  ?>
 </body>
+
 </html>

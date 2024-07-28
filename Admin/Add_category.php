@@ -14,11 +14,12 @@ $cat_description = "";
 if (isset($_POST['btnSubmit'])) {
   $cat_name = $_POST['cat_name'];
   $cat_description = $_POST['cat_description'];
-  
+  $cat_picture = $_FILES["photo"]["name"];
+  move_uploaded_file($_FILES["photo"]["tmp_name"], "../Sellersite/img/Categoriesimages/" . $_FILES["photo"]["name"]);
 
 
     // Insert data into Users table
-    $cat_query = "INSERT INTO categories (name, description ) VALUES ('$cat_name', '$cat_description' )";
+    $cat_query = "INSERT INTO categories (name, description,image ) VALUES ('$cat_name', '$cat_description','$cat_picture' )";
     $insert_cat = mysqli_query($con, $cat_query);
         if($insert_cat){
               header('location:Categories_list.php');
@@ -51,6 +52,8 @@ if (isset($_POST['btnUpdate'])) {
   $cat_id = $_POST['cat_id'];
   $cat_name = $_POST['cat_name'];
   $cat_description = $_POST['cat_description'];
+  $cat_picture = $_FILES["photo"]["name"];
+  move_uploaded_file($_FILES["photo"]["tmp_name"], "../Sellersite/img/Categoriesimages/" . $_FILES["photo"]["name"]);
 
 
   // Update user information
@@ -58,7 +61,8 @@ if (isset($_POST['btnUpdate'])) {
       UPDATE categories 
       SET 
           name = '$cat_name', 
-          description = '$cat_description'
+          description = '$cat_description',
+          image = '$cat_picture'
            
       WHERE 
           id = '$cat_id' ";
@@ -134,7 +138,7 @@ if (isset($_POST['btnUpdate'])) {
         <div class="row">
           <div class="col-2"></div>
           <div class="col-8">
-            <form method="post" enctype="">
+            <form method="post" enctype="multipart/form-data">
 
               <div class="card card-primary">
                 <div class="card-header">
@@ -151,6 +155,12 @@ if (isset($_POST['btnUpdate'])) {
                     <div class="input-group">
                       <input type="text" class="form-control" name="cat_name" placeholder="Enter Category name" required value="<?php echo $cat_name ?>">
                     </div>
+
+                  </div>
+                  <div class="form-group">
+                    <label>Add Sample photo</label>
+
+                    <input type="file" class="form-control" id="photo" name="photo">
 
                   </div>
 

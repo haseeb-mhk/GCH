@@ -1,3 +1,8 @@
+<?php
+include('includes/Session.php');
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

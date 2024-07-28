@@ -247,12 +247,23 @@ if (isset($_POST['btnUpd'])) {
                                                     <select class="form-control" name="product_sub_category" required id="product_sub_category">
                                                         <option selected value="<?php echo ($sub_cat_id) ?>"><?php echo $sub_cat_name ?></option>
                                                         <?php
-                                                        $select_sub_categories = mysqli_query($con, "Select * from sub_categories");
+                                                        $select_categories2 = mysqli_query($con, "Select * from categories");
 
-                                                        while ($row_sub_categories = mysqli_fetch_array($select_sub_categories)) {
+                                                        while ($row_categories2 = mysqli_fetch_array($select_categories2)) {
+                                                            $parent_id = $row_categories2['id'];
                                                         ?>
+                                                        <optgroup  label="<?php echo ($row_categories2['name']); ?>"><?php 
+                                                         $select_sub_categories = mysqli_query($con, "Select * from sub_categories where parent_category_id = '$parent_id'");
+                                                            while($row_sub_categories = mysqli_fetch_assoc($select_sub_categories)){
+                                                        
+                                                        ?>
+                                                            
                                                             <option value="<?php echo ($row_sub_categories['id']) ?>"><?php echo ($row_sub_categories['name']) ?></option>
-                                                        <?php }   ?>
+                                                        <?php  }  ?>   
+                                                        
+                                                        </optgroup>
+                                                        
+                                                            <?php }   ?>
                                                     </select>
                                                 </div>
                                             </div>

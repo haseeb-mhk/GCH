@@ -74,7 +74,7 @@ if (isset($_POST['btnUpdate'])) {
     die('Error updating user: ' . mysqli_error($con));
 } else {
     echo 'User updated successfully';
-    header('location:sub_categories_list.php?Uid='.$parent_cat_id);
+    // header('location:sub_categories_list.php?Uid='.$parent_cat_id);
 }
 
 
