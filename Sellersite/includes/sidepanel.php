@@ -14,7 +14,7 @@ $check_row_pending_products_numrows = mysqli_num_rows($check_row_pending_product
 
 <!-- Sidebar - Brand -->
 <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-    <img src="img/GCH_logo_2_br.png" alt="Image Not found">
+    <img src="../logos/AdminLogo_3.png" alt="Image Not found" width="200px" height="auto">
 </a>
 
 <!-- Divider -->

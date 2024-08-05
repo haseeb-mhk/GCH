@@ -59,7 +59,13 @@ ORDER BY
     blogs.created_at DESC LIMIT 3
 ");
 
+if(isset($_POST['btnAddtocart'])){
 
+// header("locataion:shop.php");
+
+
+
+}
 
 ?>
 
@@ -71,10 +77,13 @@ ORDER BY
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
   <title>GCH | Home</title>
+  <link rel="icon" type="image/png" href="../logos/favicon.png" sizes="64X64">
 
   <?php
   include("includes/Links.php")
+  
   ?>
 
   <style>
@@ -222,9 +231,14 @@ ORDER BY
                 <div class="card-product__img">
                   <img class="card-img" src="../Sellersite/img/productimages/<?php echo $row_products['image1']   ?>" alt="">
                   <ul class="card-product__imgOverlay">
-                    
-                    <li><button><i class="ti-shopping-cart"></i></button></li>
-                    <li><button><i class="ti-heart"></i></button></li>
+                   
+                    <li>
+                    <a href="add_carts.php?PID=<?php echo $row_products['id']; ?>">
+                    <button><i class="ti-shopping-cart"></i></button>
+                </a>
+                  </li>
+                    <li><button ><i class="ti-heart"></i></button></li>
+               
                   </ul>
                 </div>
                 <div class="card-body">

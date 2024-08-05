@@ -45,6 +45,8 @@ if (isset($_GET['subscription_id'])) {
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>GCH | Dashboard</title>
+  <link rel="icon" type="image/png" href="../logos/favicon.png" sizes="64X64">
+   
   <?php
   include("includes/links.php");
   ?>

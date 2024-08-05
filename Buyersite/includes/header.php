@@ -32,7 +32,7 @@ if ($result_count_products) {
   <div class="main_menu">
     <nav class="navbar navbar-expand-lg navbar-light">
       <div class="container">
-        <a class="navbar-brand logo_h" href="index.php"><img src="img/GCH_logo_2.jpg" alt=""></a>
+        <a class="navbar-brand logo_h" href="index.php"><img src="img/GCH_logo_3.png" alt="" width="200px" height="40px"></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
@@ -40,7 +40,7 @@ if ($result_count_products) {
         </button>
         <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
           <ul class="nav navbar-nav menu_nav ml-auto mr-auto">
-            <li class="nav-item active"><a class="nav-link" href="index.php">Home</a></li>
+            <li class="nav-item "><a class="nav-link" href="index.php">Home</a></li>
             <li class="nav-item">
               <a href="Shop.php" class="nav-link">Shop</a>
 
@@ -52,19 +52,16 @@ if ($result_count_products) {
             </li>
 
 
-            <li class="nav-item ">
-              <a href="About.php" class="nav-link ">About Us</a>
-
-            </li>
+       
             <li class="nav-item"><a class="nav-link" href="Contact.php">Contact Us</a></li>
           </ul>
 
-          <ul class="nav-shop">
-            <li class="nav-item">
+          <ul class="nav nav-shop navbar-nav">
+            <li class="nav-item" style="margin-top: 30px;">
               <a href="#"><i class="ti-heart"></i></a>
             </li>
          
-            <li class="nav-item"><button onclick = "window.location.href='Cart.php'"><i class="ti-shopping-cart"></i><span class="nav-shop__circle"><?php 
+            <li class="nav-item" style="margin-top: 30px;"><button onclick = "window.location.href='Cart.php'"><i class="ti-shopping-cart"></i><span class="nav-shop__circle"><?php 
             if($total_products > 0){
               echo $total_products;
             }
@@ -74,8 +71,18 @@ if ($result_count_products) {
             
             ?></span></button> </li>
             
-            <li class="nav-item"><a href="profile.php" title="Profile"><i class="ti-user"></i><span class="nav-shop__circle">&#9;&#9;&#9;<?php echo ($name); ?></span></a> </li>
-
+            
+            <li class="nav-item submenu dropdown" ><a href="profile.php" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+            aria-expanded="false" title="Profile"><i class="ti-user"></i><span class="nav-shop__circle">&#9;&#9;&#9;<?php echo ($name); ?></span></a>
+            <ul class="dropdown-menu">
+                  <li class="nav-item"><a class="nav-link" href="Orders_list.php">Orders List</a></li>
+                  <li class="nav-item"><a class="nav-link" href="Order_Tracking.php">Order Tracking</a></li>
+                  <!-- <li class="nav-item"><a class="nav-link" href="#">Order Confimation</a></li> -->
+                  <li class="nav-item"><a class="nav-link" href="Logout.php">Logout</a></li>
+                </ul>
+          
+          </li>
+           
           </ul>
         </div>
       </div>

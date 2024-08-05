@@ -12,6 +12,8 @@ include("includes/Session.php");
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="icon" type="image/png" href="../logos/favicon.png" sizes="64X64">
+   
   <title>GCH| Dashboard</title>
         <?php 
         include("includes/links.php");

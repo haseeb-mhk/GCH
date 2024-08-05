@@ -110,6 +110,7 @@ $query_select_categories = mysqli_query($con, "SELECT * from categories");
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>GCH | Shop</title>
+  <link rel="icon" type="image/png" href="../logos/favicon.png" sizes="64X64">
   <?php include "includes/Links.php" ?>
 
 
@@ -231,7 +232,11 @@ $query_select_categories = mysqli_query($con, "SELECT * from categories");
                       <div class="card-product__img" style="min-width: 100%; min-height: 100%; max-width: 100%; max-height: 100%;">
                         <img class="card-img" src="../Sellersite/img/productimages/<?php echo $row_query_select_product['image1']; ?>" style="width: 100%; height: auto;" alt="">
                         <ul class="card-product__imgOverlay">
-                          <li><button><i class="ti-shopping-cart"></i></button></li>
+                          <li>
+                            <a href="add_carts.php?PID=<?php echo $row_query_select_product['id']; ?>">
+                              <button><i class="ti-shopping-cart"></i></button>
+                            </a>
+                          </li>
                           <li><button><i class="ti-heart"></i></button></li>
                         </ul>
                       </div>

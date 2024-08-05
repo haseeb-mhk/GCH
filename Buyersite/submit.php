@@ -6,10 +6,15 @@ require('includes/config.php');
 // \Stripe\Stripe::setApiKey(''); // Replace with your actual secret key
 
 // Get the payment token and amount from the form submission
+$fullName = $_POST['name'];
+$email = $_POST['email'];
+$phoneNumber = $_POST['number'];
+$address = $_POST['address'];
+$shippingAddress = $_POST['shipping_address'];
+$orderNotes = $_POST['message'];
 $token = $_POST['stripeToken'];
-$amount = $_POST['amount'] * 100; // Amount in cents (Stripe expects the amount in cents)
-
-// Create a charge: this will charge the user's card
+// echo $fullName;
+$amount = $_POST['amount'] * 100; 
 try {
     $charge = \Stripe\Charge::create([
         "amount" => $amount, // Amount in cents
@@ -22,6 +27,7 @@ try {
     $chargeId = $charge->id;
     $amountPaid = $charge->amount / 100; // Convert back to original currency units
     $paymentStatus = $charge->status;
+    echo $paymentStatus;
 
     // // Assume you have these variables from the checkout process
     $userId = $_SESSION['user_id']; // User ID from session
@@ -33,14 +39,16 @@ try {
     // // $shippingAddress = $_POST['shipping_address']; // From form input
 
     // // Insert order details into the orders table
-    $orderQuery = "INSERT INTO orders (buyer_id, order_date, total_amount )
-                    VALUES ('$buyer_id', '$orderDate', '$amountPaid' )";
+    $orderQuery = "INSERT INTO orders (buyer_id, order_date, total_amount,payment_status )
+                    VALUES ('$buyer_id', '$orderDate', '$amountPaid', '$paymentStatus' )";
     $insertOrder = mysqli_query($con, $orderQuery);
 
 
     if ($insertOrder) {
         // Get the last inserted order ID
         $orderId = mysqli_insert_id($con);
+        $insert_billing_details = mysqli_query($con, "INSERT INTO `billing_details`( `order_id`, `full_name`, `email`, `phone_no`, `address`, `shipping_address`, `order_notes`) 
+        VALUES ('$orderId','$fullName','$email','$phoneNumber','$address','$shippingAddress','$orderNotes')");
 
         $cartAndItemsQuery = "
         SELECT 
@@ -83,10 +91,10 @@ try {
             echo mysqli_errno($con);
         }
 
-        echo "Order has been successfully processed.";
+        // echo "Order has been successfully processed.";
         // Optionally, redirect to a confirmation page
-        // header("Location: confirmation.php");
-        // exit();
+        header("Location: confirmation.php?OID=".$orderId."&PS=".$paymentStatus);
+        exit();
     } else {
         echo "Failed to store order details in the database.";
     }

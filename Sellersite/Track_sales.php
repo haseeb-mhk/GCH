@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-
+    <link rel="icon" type="image/png" href="../logos/favicon.png" sizes="64X64">
     <title>GCH | Seller</title>
     <?php include("includes/links.php")  ?>
 

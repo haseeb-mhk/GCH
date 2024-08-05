@@ -11,12 +11,4 @@ $query_for_name = mysqli_query($con,"select * from buyers where user_id = '$user
 $result = mysqli_fetch_assoc($query_for_name);
 $name = $result['full_name'];
 
-// for logout 
-if(isset($_POST["btnlogout"])){
-
-    session_destroy();
-    header("location:../index.php");
-    
-}
-
 ?>

@@ -46,6 +46,7 @@ $sub_total_price = 0;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>GCH | Checkouts</title>
+    <link rel="icon" type="image/png" href="../logos/favicon.png" sizes="64X64">
     <?php include "includes/Links.php" ?>
 </head>
 
@@ -81,37 +82,38 @@ $sub_total_price = 0;
         <section class="checkout_area section-margin--small">
             <div class="container">
 
+            <form method="post" action="submit.php" class="contact_form" novalidate="novalidate" >
+                                    
 
                 <div class="billing_details">
                     <div class="row">
                         <div class="col-lg-8">
                             <h3>Billing Details</h3>
-                            <form class="row contact_form" action="#" method="post" novalidate="novalidate">
-                                <div class="col-md-6 form-group p_star">
-                                    <input type="text" class="form-control" id="full_name" name="name" placeholder=" Full Name">
-                                </div>
+                            <div class="col-sm-6 form-group ">
+                                <input type="text" class="form-control" id="full_name" name="name" placeholder=" Full Name" required>
+                            </div>
 
-                                <div class="col-md-6 form-group">
-                                    <input type="text" class="form-control" id="email" name="email" placeholder="  Email">
-                                </div>
-                                <div class="col-md-6 form-group p_star">
-                                    <input type="text" class="form-control" id="number" name="number" placeholder="  phone number">
-                                </div>
-                                <div class="col-md-6 form-group p_star">
-                                    <input type="text" class="form-control" id="address" name="address" placeholder="  Address">
-                                </div>
+                            <div class="col-sm-6 form-group">
+                                <input type="text" class="form-control" id="email" name="email" placeholder="  Email" required>
+                            </div>
+                            <div class="col-md-6 form-group p_star">
+                                <input type="text" class="form-control" id="number" name="number" placeholder="  phone number" required>
+                            </div>
+                            <div class="col-md-6 form-group p_star">
+                                <input type="text" class="form-control" id="address" name="address" placeholder="  Address" required>
+                            </div>
 
 
-                                <div class="col-md-12 form-group mb-0">
-                                    <div class="creat_account">
-                                        <h3>Shipping Address</h3>
-                                        <input type="text" class="form-control" id="address" name="address" placeholder="  Address">
+                            <div class="col-md-12 form-group mb-0">
+                                <div class="creat_account">
+                                    <h3>Shipping Address</h3>
+                                    <input type="text" class="form-control" id="address" name="shipping_address" placeholder="  Address" required>
 
-                                    </div><br>
-                                    <h3>Order Notes</h3>
-                                    <textarea class="form-control" name="message" id="message" rows="1" placeholder="Order Notes"></textarea>
-                                </div>
-                            </form>
+                                </div><br>
+                                <h3>Order Notes</h3>
+                                <textarea class="form-control" name="message" id="message" rows="1" placeholder="Order Notes"></textarea>
+                            </div>
+
                         </div>
                         <div class="col-lg-4">
                             <div class="order_box">
@@ -147,17 +149,15 @@ $sub_total_price = 0;
                                 </div>
                                 <div class="text-center">
 
-                                    <form method="post" action="submit.php">
                                     <input type="hidden" name="amount" value="<?php echo $sub_total_price; ?>">
                                     <script src="https:checkout.stripe.com/checkout.js" class="stripe-button" data-key="<?php echo $Publishable_key ?>" data-amount="<?php echo $sub_total_price * 100  ?>" data-currency="pkr" data-name="<?php echo $buyer_name  ?>" data-description="Enter your cards Details for payment Transaction" data-image="buyerimages/<?php echo $buyer_photo;  ?>" data-label="Proceed to Payment" data-locale="auto">
-                                                
-
-                                        </script>
 
 
+                                    </script>
 
-                                    </form>
-           
+
+
+
                                 </div>
 
 
@@ -166,6 +166,7 @@ $sub_total_price = 0;
                         </div>
                     </div>
                 </div>
+            </form>
             </div>
         </section>
         <!--================End Checkout Area =================-->

@@ -1,7 +1,9 @@
 	<footer class="footer">
 		<div class="footer-area">
-			<div class="container">
-			
+			<div class="container" style="margin-top: -180px;">
+			<div class="row justify-content-center" style="margin-bottom: 30px; ">
+                <img src="../logos/Admin_logo.png" alt="Brand Logo" class="brand-logo" width="250px" height="auto" style="">
+            </div>
 				<div class="row section_gap">
 					<div class="col-lg-3 col-md-6 col-sm-6">
 						<div class="single-footer-widget tp_widgets">
