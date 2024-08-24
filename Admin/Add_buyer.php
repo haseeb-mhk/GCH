@@ -123,7 +123,7 @@ if (isset($_POST['btnUpdate'])) {
   ";
   if (!empty($_FILES["photo"]["name"])) {
     $photo = $_FILES["photo"]["name"];
-    move_uploaded_file($_FILES["photo"]["tmp_name"], "buyerimages/" . $photo);
+    move_uploaded_file($_FILES["photo"]["tmp_name"], "../Buyersite/buyerimages/" . $photo);
     $update_buyer_query .= ", photo = '$photo' ";
   }
   $update_buyer_query .= " WHERE id = '$buyer_id';";

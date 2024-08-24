@@ -1,10 +1,19 @@
 <?php
 include("includes/Session.php");
 // query for selecting All orders 
+if(isset($_GET['bid'])){
+$buyer_id = $_GET['bid'];
+echo $buyer_id;
+$select_orders = mysqli_query($con, "SELECT orders.*, buyers.full_name AS buyer_name
+FROM orders
+JOIN buyers ON orders.buyer_id = buyers.id
+Where orders.buyer_id  = '$buyer_id'");
+
+}else{
 $select_orders = mysqli_query($con, "SELECT orders.*, buyers.full_name AS buyer_name
 FROM orders
 JOIN buyers ON orders.buyer_id = buyers.id;");
-
+}
 
 // if(isset($_POST['btnupd'])){
 // $shipping_status = 

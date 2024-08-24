@@ -108,7 +108,6 @@ if (isset($_GET['Did'])) {
                   <th>Business Name</th>
                   <th> Business type</th>
                   <th> created at</th>
-                  <th> Details</th>
                   <th> products</th>
                   <th> Edit</th>
                   <th> Delete</th>
@@ -122,7 +121,6 @@ if (isset($_GET['Did'])) {
                   echo "<td>{$row['business_name']}</td>";
                   echo "<td>{$row['business_type']}</td>";
                   echo "<td>{$row['created_at']}</td>";
-                  echo "<td style='align-content: center;'><a href='#' class='btn btn-warning'>Details</a></td>";
                   echo "<td style='align-content: center;'><a href='Product_of_sellers.php?Sid={$row['seller_id']}' class='btn btn-info'>Products</a></td>";
                   echo "<td><a href='Add_seller.php?Uid={$row['user_id']}' class='btn btn-success'>Edit</a></td>";
 
@@ -139,7 +137,7 @@ if (isset($_GET['Did'])) {
                   <th>Full Name</th>
 
                   <th> created at</th>
-                  <th>Details</th>
+         
                   <th> products</th>
 
                   <th> Edit</th>

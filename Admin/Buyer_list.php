@@ -113,7 +113,7 @@ if (isset($_GET['Did'])) {
                   <th>Photo</th>
                   <th>Full Name</th>
                     <th> created at</th>
-                  <th> Details</th>
+               
                   <th> Orders</th>
                   <th> Edit</th>
                   <th> Delete</th>
@@ -128,8 +128,7 @@ if (isset($_GET['Did'])) {
                             echo "<td>{$row['full_name']}</td>";
                            
                             echo "<td>{$row['created_at']}</td>";
-                            echo "<td style='align-content: center;'><a href='buyer_details.php?oid=$row[user_id]' class='btn btn-warning'>Details</a></td>";
-                            echo "<td style='align-content: center;'><a href='view_order.php?oid=$row[user_id]' class='btn btn-info'>Order</a></td>";
+                            echo "<td style='align-content: center;'><a href='orders_list.php?bid=$row[buyer_id]' class='btn btn-warning'>Orders</a></td>";
                             echo "<td><a href='Add_buyer.php?Uid=$row[user_id]' class='btn btn-success'>Edit</a></td>";
                             echo "<td><a href='Buyer_list.php?Did={$row['user_id']}' class='btn btn-danger' onclick='return confirm(\"Are you sure to delete this buyer?\")'>Delete</a></td>";
                             echo "</tr>";
@@ -143,7 +142,7 @@ if (isset($_GET['Did'])) {
                 <tr>
                   <th>Photo</th>
                   <th>Full Name</th>
-                   <th> details </th>
+                  
                    <th> Orders </th>
                   <th> Edit</th>
                   <th> Delete</th>

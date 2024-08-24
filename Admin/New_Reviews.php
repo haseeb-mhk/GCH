@@ -1,4 +1,7 @@
-
+<?php
+// include("../includes/Connection.php");
+include("includes/Session.php");
+?>
 
 <!DOCTYPE html>
 <html>

@@ -79,6 +79,21 @@ else{
   $subscription_count = "";
 }
 
+
+// SQL query to count orders with is_new = 1
+$sql = "SELECT COUNT(*) as new_orders_count FROM orders WHERE is_new = 1";
+
+$result_order = mysqli_query($con, $sql);
+
+if ($result_order) {
+    $row_result_order = mysqli_fetch_assoc($result_order);
+   $count_order =  $row_result_order['new_orders_count'];
+} else {
+    $count_order = 0;
+}
+
+// mysqli_close($con);
+
 ?>
 
 
@@ -283,7 +298,20 @@ else{
             <p>
               Manage Orders
               <i class="fas fa-angle-left right"></i>
-              <span class="right badge badge-danger">New</span>
+              <?php 
+              if($count_order > 0){
+                ?>
+                    <span class="right badge badge-danger">New
+                    </span>
+                
+                <?php
+              }
+              else{
+
+              }
+              
+              ?>
+          
             </p>
           </a>
           <ul class="nav nav-treeview">
@@ -291,7 +319,18 @@ else{
               <a href="New_order.php" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>New Orders</p>
-                <span class="right badge badge-danger">New</span>
+                <?php   
+                if($count_order> 0 ){
+                ?>
+                 <span class="right badge badge-danger"><?php echo $count_order  ?></span>
+                
+                <?php 
+                     }
+                     else{
+
+                     }
+                ?>
+               
               </a>
             </li>
             <li class="nav-item">
@@ -413,7 +452,7 @@ else{
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-comments"></i>
             <p>
-              Manage Reviews
+              Manage Review
               <i class="fas fa-angle-left right"></i>
               <span class="right badge badge-danger">New</span>
             </p>
@@ -443,7 +482,6 @@ else{
             <p>
               Manage Blogs
               <i class="fas fa-angle-left right"></i>
-              <span class="right badge badge-danger">New</span>
             </p>
           </a>
           <ul class="nav nav-treeview">
@@ -458,12 +496,7 @@ else{
                 <p>Blogs List</p>
               </a>
             </li>
-            <li class="nav-item">
-              <a href="Blogs_approvals.php" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Blogs approvals</p>
-              </a>
-            </li>
+           
 
           </ul>
         </li>
