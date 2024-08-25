@@ -54,7 +54,7 @@ $check_row_pending_products_numrows = mysqli_num_rows($check_row_pending_product
         <a class="collapse-item" href="Low_stock_alert.php?p_name=Low stock Products List">
         <i class="	far fa-compass"></i>
        
-        <span>Low Stock alert    <sup style="display: inline-block; background-color: red; color: white; border-radius: 50%; width: 1.5em; height: 1.5em; line-height: 1.5em; text-align: center;font-weight:bold"><?php echo $check_row_pending_products_numrows; ?></sup></span>
+        <span>Low Stock alert   </span>
 
         </a>
         </div>

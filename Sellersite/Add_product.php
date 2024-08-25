@@ -40,6 +40,7 @@ if (isset($_POST['btnSubmit'])) {
             $productCategory =  $_POST['product_category'];
             $productSubCategory = $_POST['product_sub_category'];
             $productPrice =  $_POST['product_price'];
+            
             $productDescription =  $_POST['product_description'];
             // Handling file uploads
             $image1 = $_FILES['product_image1']['name'];
