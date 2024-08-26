@@ -80,6 +80,8 @@ if(isset($_POST['btnAddtocart'])){
 
   <title>GCH | Home</title>
   <link rel="icon" type="image/png" href="../logos/favicon.png" sizes="64X64">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style2.css">
 
   <?php
   include("includes/Links.php")
@@ -335,7 +337,7 @@ if(isset($_POST['btnAddtocart'])){
   <?php
   include("includes/jslinks.php")
   ?>
-
+  <script src="js/main.js"></script>
 </body>
 
 </html>

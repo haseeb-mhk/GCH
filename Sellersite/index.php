@@ -25,6 +25,7 @@ if ($result && mysqli_num_rows($result) > 0) {
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" type="image/png" href="../logos/favicon.png" sizes="32X32">
+    <link href="css/sb-admin-2.css" rel="stylesheet">
     <title>GCH | Seller</title>
     <?php include("includes/links.php")  ?>
 
@@ -97,6 +98,9 @@ if ($result && mysqli_num_rows($result) > 0) {
         </div>
     </div>
     <?php include("includes/jslinks.php")  ?>
+
+    <script src="js/sb-admin-2.min.js"></script>
+
 </body>
 
 </html>

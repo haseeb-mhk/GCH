@@ -112,7 +112,7 @@ $query_select_orders = mysqli_query($con,"Select * from orders where buyer_id = 
                                         <div class="checkout_btn_inner d-flex align-items-center">
                                             <a class="gray_btn" href="shop.php">Continue Shopping</a>
                                             <!-- <button type="submit" class=" btn primary-btn ml-2"> Proceed to checkouts</button> -->
-                                            <a class="primary-btn ml-2" href="Checkouts.php">Proceed to checkout</a>
+                                          
                                         </div>
                                     </td>
                                 </tr>
